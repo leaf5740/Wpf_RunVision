@@ -1,0 +1,22 @@
+﻿<Application x:Class="Wpf_RunVision.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="Views/MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- HandyControl 默认皮肤和主题 -->
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDefault.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- ================== 覆盖颜色 ================== -->
+            <!-- 注意：这些 Key 必须和 HandyControl 内部的一样，才能覆盖成功 -->
+            <!--<Color x:Key="RegionColor">#FFFFFF</Color>-->
+            <Color x:Key="BorderColor">#D8D8D8</Color>
+            <!--<SolidColorBrush x:Key="RegionBrush" Color="#797979"/>
+            <SolidColorBrush x:Key="BorderBrush" Color="#797979"/>
+            <SolidColorBrush x:Key="BaseBorderBrush" Color="#797979"/>-->
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,87 @@
+﻿<Window x:Class="Wpf_RunVision.Views.PermissionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:vm="clr-namespace:Wpf_RunVision.ViewModels"
+        mc:Ignorable="d"
+        Title="当前权限：员工"
+        Height="300" Width="400"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize" 
+        WindowStyle="SingleBorderWindow">
+
+    <!-- ==============================
+         绑定 ViewModel
+    =============================== -->
+    <Window.DataContext>
+        <vm:PermissionWindowViewModel/>
+    </Window.DataContext>
+
+    <!-- ==============================
+         事件绑定（MVVM 写法）
+         关闭窗口时调用 WindowClosedCommand
+    =============================== -->
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closed">
+            <i:InvokeCommandAction Command="{Binding WindowClosedCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid Margin="50,20,50,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ==============================
+             用户头像（随密码变化刷新）
+        =============================== -->
+        <hc:Gravatar Grid.Row="0"
+                     Height="50" Width="50"
+                     Id="{Binding Password}"/>
+
+        <!-- ==============================
+             密码输入框
+             - 绑定 Password（通过附加属性/行为）
+             - 带提示、标题、必填标识
+        =============================== -->
+        <hc:PasswordBox Grid.Row="1"
+                        x:Name="HCPasswordBox"
+                        hc:InfoElement.Placeholder="请输入内容"
+                        hc:InfoElement.Title="@工程师密码"
+                        hc:InfoElement.Necessary="True"
+                        PreviewKeyDown="HCPasswordBox_PreviewKeyDown"
+                        Margin="0,10,0,0"/>
+
+        <!-- ==============================
+             确认按钮
+             - 执行 ConfirmCommand
+             - 传递当前窗口作为参数
+        =============================== -->
+        <Button Grid.Row="2" 
+                Content="确定"
+                Margin="0,20,0,0" 
+                Height="35"
+                HorizontalAlignment="Stretch"
+                Command="{Binding ConfirmCommand}"
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+                Style="{StaticResource ButtonPrimary}"/>
+
+        <!-- ==============================
+             屏幕键盘按钮
+             - 执行 ShowKeyboardCommand
+        =============================== -->
+        <Button Grid.Row="3" 
+                Content="屏幕键盘"
+                Margin="0,10,0,0" 
+                Height="35"
+                HorizontalAlignment="Stretch"
+                Command="{Binding ShowKeyboardCommand}"
+                Style="{StaticResource ButtonSuccess}"/>
+    </Grid>
+</Window>
