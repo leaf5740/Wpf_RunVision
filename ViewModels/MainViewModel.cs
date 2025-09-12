@@ -6,15 +6,17 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using VM.Core;
+using VMControls.WPF.Release.Front;
 using Wpf_RunVision.Tools;
 using Wpf_RunVision.Views;
 using YourApp.Tools;
 
 namespace Wpf_RunVision.ViewModels
 {
-    public class MainWindowViewModel : ObservableObject
+    public class MainViewModel : ObservableObject
     {
         private readonly string projectRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Projects");
 
@@ -38,7 +40,7 @@ namespace Wpf_RunVision.ViewModels
             set => SetProperty(ref _currentScheme, value); 
         }
 
-        public MainWindowViewModel()
+        public MainViewModel()
         {
             // 初始化方案列表
             LoadSchemes();
@@ -89,7 +91,20 @@ namespace Wpf_RunVision.ViewModels
         /// </summary>
         public ICommand OpenSchemeCommand => new RelayCommand(() =>
         {
-            MyLogger.Warn("打开方案配置窗口");
+            // 获取全局主窗口实例
+            var mainWindow = Application.Current.MainWindow;
+            // 创建子窗口并设置 Owner
+            SchemeConfigWindow schemeConfigWindow = new SchemeConfigWindow();
+            // 绑定到主窗口
+            schemeConfigWindow.Owner = mainWindow; 
+            // 居中显示
+            schemeConfigWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner; 
+            // 显示模态窗口
+            bool? result = schemeConfigWindow.ShowDialog();
+            if (result == true)
+            {
+                // 处理确认逻辑
+            }
         });
 
         /// <summary>
@@ -97,15 +112,17 @@ namespace Wpf_RunVision.ViewModels
         /// </summary>
         public ICommand TogglePermissionCommand => new RelayCommand(() =>
         {
+            
             if (CurrentPermission == "当前权限：工程师")
             {
                 CurrentPermission = "当前权限：员工";
                 return;
             }
-
+            var mainWindow = Application.Current.MainWindow;
             PermissionWindow permissionWindow = new PermissionWindow();
+            permissionWindow.Owner = mainWindow;
+            permissionWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             bool? dia = permissionWindow.ShowDialog();
-
             if (dia == true)
             {
                 CurrentPermission = "当前权限：工程师";

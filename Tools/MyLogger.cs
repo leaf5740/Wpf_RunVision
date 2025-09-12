@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.Win32;
+using HandyControl.Controls;
 
 namespace YourApp.Tools
 {
@@ -130,12 +131,22 @@ namespace YourApp.Tools
         /// <param name="markHandled">是否标记 UI 异常已处理，避免程序崩溃</param>
         public void RegisterGlobalExceptionHandlers(bool markHandled = true)
         {
+            // 捕获 UI 线程未处理异常
             if (Application.Current != null)
             {
-                // 捕获 UI 线程未处理异常
                 Application.Current.DispatcherUnhandledException += (s, e) =>
                 {
-                    Error($"UI线程未处理异常: {e.Exception.Message}", e.Exception);
+                    string errorMsg = $"UI线程未处理异常：{e.Exception.Message}\n\n详细信息：{e.Exception.StackTrace}";
+                    Error(errorMsg, e.Exception);
+
+                    // 弹出错误对话框
+                    System.Windows.MessageBox.Show(
+                        errorMsg,
+                        "程序错误",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                    );
+
                     e.Handled = markHandled;
                 };
             }
@@ -144,15 +155,41 @@ namespace YourApp.Tools
             AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
                 var ex = e.ExceptionObject as Exception;
-                Error($"非UI线程未处理异常: {ex?.Message}", ex);
+                string errorMsg = $"非UI线程未处理异常：{ex?.Message}\n\n详细信息：{ex?.StackTrace}";
+                Error(errorMsg, ex);
+
+                // 非UI线程中需要通过Dispatcher切换到UI线程显示弹窗
+                Application.Current?.Dispatcher.Invoke(() =>
+                {
+                    System.Windows.MessageBox.Show(
+                        errorMsg,
+                        "程序错误",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                    );
+                });
             };
 
             // 捕获 Task 未观察到的异常
             TaskScheduler.UnobservedTaskException += (s, e) =>
             {
-                Error($"Task未观察到的异常: {e.Exception?.Message}", e.Exception);
+                string errorMsg = $"Task未观察到的异常：{e.Exception?.Message}\n\n详细信息：{e.Exception?.StackTrace}";
+                Error(errorMsg, e.Exception);
+
+                // Task异常可能在非UI线程，需切换到UI线程
+                Application.Current?.Dispatcher.Invoke(() =>
+                {
+                    System.Windows.MessageBox.Show(
+                        errorMsg,
+                        "程序错误",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                    );
+                });
+
                 e.SetObserved();
             };
+
         }
 
         #endregion
@@ -397,24 +434,34 @@ namespace YourApp.Tools
 
             menu.Items.Add(new Separator());
 
-            // 日志等级过滤
+            // 日志等级过滤（合并到子菜单）
+            var miLevel = new MenuItem { Header = "日志等级过滤" };
+
+            // Info
             var miInfo = new MenuItem { Header = "显示 Info", IsCheckable = true, IsChecked = _showInfo };
             miInfo.Click += (s, e) => { _showInfo = miInfo.IsChecked; SafeInvoke(RefreshDisplay); };
-            menu.Items.Add(miInfo);
+            miLevel.Items.Add(miInfo);
 
+            // Debug
             var miDebug = new MenuItem { Header = "显示 Debug", IsCheckable = true, IsChecked = _showDebug };
             miDebug.Click += (s, e) => { _showDebug = miDebug.IsChecked; SafeInvoke(RefreshDisplay); };
-            menu.Items.Add(miDebug);
+            miLevel.Items.Add(miDebug);
 
+            // Warn
             var miWarn = new MenuItem { Header = "显示 Warn", IsCheckable = true, IsChecked = _showWarn };
             miWarn.Click += (s, e) => { _showWarn = miWarn.IsChecked; SafeInvoke(RefreshDisplay); };
-            menu.Items.Add(miWarn);
+            miLevel.Items.Add(miWarn);
 
+            // Error
             var miError = new MenuItem { Header = "显示 Error", IsCheckable = true, IsChecked = _showError };
             miError.Click += (s, e) => { _showError = miError.IsChecked; SafeInvoke(RefreshDisplay); };
-            menu.Items.Add(miError);
+            miLevel.Items.Add(miError);
+
+            // 添加子菜单到主菜单
+            menu.Items.Add(miLevel);
 
             _rtb.ContextMenu = menu;
+
         }
 
         /// <summary>

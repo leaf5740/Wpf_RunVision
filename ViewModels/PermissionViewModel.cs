@@ -1,11 +1,14 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using HandyControl.Controls;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using Wpf_RunVision.Tools;
 
 namespace Wpf_RunVision.ViewModels
 {
-    public class PermissionWindowViewModel : ObservableObject
+    public class PermissionViewModel : ObservableObject
     {
         private string _password;
         public string Password
@@ -14,7 +17,7 @@ namespace Wpf_RunVision.ViewModels
             set => SetProperty(ref _password, value);
         }
 
-        public PermissionWindowViewModel()
+        public PermissionViewModel()
         {
 
         }
@@ -34,12 +37,12 @@ namespace Wpf_RunVision.ViewModels
             {
                 if (Confirm != null)
                     Confirm.DialogResult = true;
-
+                Growl.ClearGlobal();
                 KeyboardHelper.CloseKeyboard();
             }
             else
             {
-                HandyControl.Controls.Growl.ErrorGlobal("密码错误，请重新输入!");
+                Growl.ErrorGlobal("密码错误，请重新输入!");
             }
         });
 
@@ -56,7 +59,7 @@ namespace Wpf_RunVision.ViewModels
         /// </summary>
         public ICommand WindowClosedCommand => new RelayCommand(() =>
         {
-            HandyControl.Controls.Growl.ClearGlobal();
+            Growl.ClearGlobal();
         });
 
     }

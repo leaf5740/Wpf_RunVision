@@ -5,25 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        xmlns:vm="clr-namespace:Wpf_RunVision.ViewModels"
         mc:Ignorable="d"
         Title="当前权限：员工"
         Height="300" Width="400"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize" 
+        ShowInTaskbar="False"
         WindowStyle="SingleBorderWindow">
 
-    <!-- ==============================
-         绑定 ViewModel
-    =============================== -->
-    <Window.DataContext>
-        <vm:PermissionWindowViewModel/>
-    </Window.DataContext>
-
-    <!-- ==============================
-         事件绑定（MVVM 写法）
-         关闭窗口时调用 WindowClosedCommand
-    =============================== -->
+    <!-- 关闭窗口时调用 WindowClosedCommand -->
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closed">
             <i:InvokeCommandAction Command="{Binding WindowClosedCommand}" />
@@ -52,11 +42,12 @@
         =============================== -->
         <hc:PasswordBox Grid.Row="1"
                         x:Name="HCPasswordBox"
+                        ShowEyeButton="True"
                         hc:InfoElement.Placeholder="请输入内容"
                         hc:InfoElement.Title="@工程师密码"
                         hc:InfoElement.Necessary="True"
-                        PreviewKeyDown="HCPasswordBox_PreviewKeyDown"
-                        Margin="0,10,0,0"/>
+                        Margin="0,10,0,0"
+                        PreviewKeyDown="HCPasswordBox_PreviewKeyDown"/>
 
         <!-- ==============================
              确认按钮

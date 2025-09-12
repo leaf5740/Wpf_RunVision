@@ -1,10 +1,5 @@
-﻿using HandyControl.Controls;
-using System;
-using System.Windows;
-using System.Windows.Input;
+﻿using System;
 using System.Windows.Threading;
-using Wpf_RunVision.Tools;
-using Wpf_RunVision.ViewModels;
 
 namespace Wpf_RunVision.Views
 {
@@ -16,14 +11,13 @@ namespace Wpf_RunVision.Views
         public PermissionWindow()
         {
             InitializeComponent();
-
+            this.DataContext = new ViewModels.PermissionViewModel();
         }
 
         private void HCPasswordBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            var vm = this.DataContext as PermissionWindowViewModel;
+            var vm = this.DataContext as ViewModels.PermissionViewModel;
             if (vm == null) return;
-
             // 延迟同步，确保拿到最新输入的密码
             Dispatcher.BeginInvoke(new Action(() =>
             {

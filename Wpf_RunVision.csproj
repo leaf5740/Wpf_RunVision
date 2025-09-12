@@ -37,6 +37,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CommunityToolkit.Mvvm, Version=8.4.0.0, Culture=neutral, PublicKeyToken=4aff67a105548ee2, processorArchitecture=MSIL">
       <HintPath>packages\CommunityToolkit.Mvvm.8.4.0\lib\netstandard2.0\CommunityToolkit.Mvvm.dll</HintPath>
@@ -140,10 +144,14 @@
     <Compile Include="Tools\KeyboardHelper.cs" />
     <Compile Include="Tools\ProjectConfigHelper.cs" />
     <Compile Include="Tools\MyLogger.cs" />
-    <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="ViewModels\PermissionWindowViewModel.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\PermissionViewModel.cs" />
+    <Compile Include="ViewModels\SchemeConfigViewModel.cs" />
     <Compile Include="Views\PermissionWindow.xaml.cs">
       <DependentUpon>PermissionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SchemeConfigWindow.xaml.cs">
+      <DependentUpon>SchemeConfigWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -158,6 +166,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\PermissionWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SchemeConfigWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

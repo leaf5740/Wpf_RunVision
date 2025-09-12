@@ -15,15 +15,7 @@
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized">
 
-
-    <Window.DataContext>
-        <vm:MainWindowViewModel/>
-    </Window.DataContext>
-
-    <!-- ==============================
-         事件绑定（MVVM 写法）
-         关闭窗口时调用 WindowClosedCommand
-    =============================== -->
+    <!-- 关闭窗口时调用 WindowClosedCommand -->
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closed">
             <i:InvokeCommandAction Command="{Binding WindowClosedCommand}" />
