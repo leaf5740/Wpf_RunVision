@@ -1,6 +1,7 @@
 ﻿using HandyControl.Controls;
 using System.Linq;
-using YourApp.Tools;
+using VMControls.WPF.Release;
+using Wpf_RunVision.Tools;
 
 namespace Wpf_RunVision.Views
 {
@@ -13,6 +14,8 @@ namespace Wpf_RunVision.Views
             this.DataContext = new ViewModels.MainViewModel();
             MyLogger.Instance.Initialize(LogRichTextBox, "logs", 500, 300);
             MyLogger.Info("程序启动！");
+          
+
 
         }
     }

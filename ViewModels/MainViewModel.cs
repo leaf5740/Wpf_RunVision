@@ -9,10 +9,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using VM.Core;
-using VMControls.WPF.Release.Front;
+using VMControls.WPF.Release;
 using Wpf_RunVision.Tools;
 using Wpf_RunVision.Views;
-using YourApp.Tools;
 
 namespace Wpf_RunVision.ViewModels
 {
@@ -20,31 +19,40 @@ namespace Wpf_RunVision.ViewModels
     {
         private readonly string projectRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Projects");
 
-        // 方案名 → 文件夹路径
+        // 存储方案名和对应文件夹路径
         public Dictionary<string, string> SchemeFolders { get; } = new Dictionary<string, string>();
 
-        // 方案集合（用于菜单绑定）
+        // 菜单绑定使用的方案集合
         public ObservableCollection<string> Schemes { get; } = new ObservableCollection<string>();
 
+        // 当前用户权限（显示在界面）
         private string _currentPermission = "当前权限：员工";
         public string CurrentPermission
         {
             get => _currentPermission;
-            set => SetProperty(ref _currentPermission, value); 
+            set => SetProperty(ref _currentPermission, value);
         }
 
+        // 当前选择的方案（显示在界面）
         private string _currentScheme = "当前方案：null";
         public string CurrentScheme
         {
             get => _currentScheme;
-            set => SetProperty(ref _currentScheme, value); 
+            set => SetProperty(ref _currentScheme, value);
+        }
+
+        // 用于绑定 UI 的前端控件
+        private VmFrontendControl _frontendControl;
+        public VmFrontendControl FrontendControl
+        {
+            get => _frontendControl;
+            set => SetProperty(ref _frontendControl, value);
         }
 
         public MainViewModel()
         {
-            // 初始化方案列表
+            // 初始化加载方案列表
             LoadSchemes();
-
         }
 
         /// <summary>
@@ -69,77 +77,69 @@ namespace Wpf_RunVision.ViewModels
                     Schemes.Add(folderName);
                     SchemeFolders[folderName] = folder; // 保存路径
 
-                    // 检查配置文件是否存在
+                    // 如果配置文件不存在，则生成默认配置
                     string configFile = Path.Combine(folder, "config.json");
                     if (!File.Exists(configFile))
                     {
                         ProjectConfigHelper.Instance.CurrentConfig.Name = folderName;
                         ProjectConfigHelper.Instance.CurrentConfig.Exposure = 50;
                         ProjectConfigHelper.Instance.SaveConfig();
-
                     }
                 }
             }
 
-            //// 设置默认选择第一个方案
-            //if (Schemes.Count > 0)
-            //    CurrentScheme = $"当前方案：{Schemes[0]}";
+            // 如果没有方案，则显示占位
+            if (Schemes.Count == 0)
+            {
+                Schemes.Add("无方案");
+                CurrentScheme = "当前方案：无方案";
+            }
         }
 
         /// <summary>
-        /// 方案配置事件
+        /// 打开方案配置窗口
         /// </summary>
         public ICommand OpenSchemeCommand => new RelayCommand(() =>
         {
-            // 获取全局主窗口实例
             var mainWindow = Application.Current.MainWindow;
-            // 创建子窗口并设置 Owner
             SchemeConfigWindow schemeConfigWindow = new SchemeConfigWindow();
-            // 绑定到主窗口
-            schemeConfigWindow.Owner = mainWindow; 
-            // 居中显示
-            schemeConfigWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner; 
-            // 显示模态窗口
-            bool? result = schemeConfigWindow.ShowDialog();
-            if (result == true)
-            {
-                // 处理确认逻辑
-            }
+            schemeConfigWindow.Owner = mainWindow;
+            schemeConfigWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            schemeConfigWindow.ShowDialog();
         });
 
         /// <summary>
-        /// 登录事件
+        /// 切换用户权限（员工/工程师）
         /// </summary>
         public ICommand TogglePermissionCommand => new RelayCommand(() =>
         {
-            
             if (CurrentPermission == "当前权限：工程师")
             {
                 CurrentPermission = "当前权限：员工";
                 return;
             }
+
             var mainWindow = Application.Current.MainWindow;
             PermissionWindow permissionWindow = new PermissionWindow();
             permissionWindow.Owner = mainWindow;
             permissionWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             bool? dia = permissionWindow.ShowDialog();
             if (dia == true)
-            {
                 CurrentPermission = "当前权限：工程师";
-            }
             else
-            {
                 KeyboardHelper.CloseKeyboard();
-            }
         });
 
         /// <summary>
-        /// 加载切换方案事件
+        /// 切换方案命令
         /// </summary>
         public ICommand SwitchSchemeCommand => new RelayCommand<string>(async schemeName =>
         {
-            if (string.IsNullOrEmpty(schemeName))
+            if (string.IsNullOrWhiteSpace(schemeName) || schemeName == "无方案")
+            {
+                MyLogger.Warn("当前没有可用方案，操作无效。");
                 return;
+            }
 
             if (CurrentScheme == $"当前方案：{schemeName}")
             {
@@ -149,51 +149,74 @@ namespace Wpf_RunVision.ViewModels
 
             try
             {
-                // 可选：这里创建 Progress<int> 来更新绑定属性或日志
-                var progress = new Progress<int>(p =>
-                {
-                    // TODO: 如果有进度条绑定，可以在这里更新
-                    MyLogger.Info($"加载进度: {p}%");
-                });
+                string solFile = null;
+                string folder = null;
 
-                // 异步加载方案
+                // 后台线程：加载配置 + 查找 .sol 文件 + 关闭旧方案
                 await Task.Run(() =>
                 {
-                    if (SchemeFolders.TryGetValue(schemeName, out string folder))
+                    if (!SchemeFolders.TryGetValue(schemeName, out folder))
+                        return;
+
+                    // 加载配置
+                    ProjectConfigHelper.Instance.LoadConfig(folder);
+                    MyLogger.Info($"方案 [{schemeName}] 加载进度: 30%");
+
+                    // 查找 .sol 文件
+                    solFile = Directory.GetFiles(folder, "*.sol").FirstOrDefault();
+                    MyLogger.Info($"方案 [{schemeName}] 加载进度: 60%");
+
+                    // 关闭旧方案 + 垃圾回收
+                    try
                     {
-                        ProjectConfigHelper.Instance.LoadConfig(folder);
-                        (progress as IProgress<int>)?.Report(30);
-
-                        string solFile = Directory.GetFiles(folder, "*.sol").FirstOrDefault();
-                        (progress as IProgress<int>)?.Report(60);
-
-                        if (!string.IsNullOrEmpty(solFile))
-                        {
-                            VmSolution.Load(solFile);
-                            (progress as IProgress<int>)?.Report(100);
-                        }
-                        else
-                        {
-                            MyLogger.Error("未找到 .sol 文件");
-                        }
+                        VmSolution.Instance.CloseSolution();
+                        GC.Collect();
+                        GC.WaitForPendingFinalizers();
+                    }
+                    catch (Exception ex)
+                    {
+                        MyLogger.Error($"关闭旧方案失败: {ex.Message}");
                     }
                 });
-                CurrentScheme = $"当前方案：{schemeName}";
-                MyLogger.Info($"方案 [{schemeName}] 加载完成。");
+
+                if (string.IsNullOrEmpty(solFile))
+                {
+                    MyLogger.Error($"方案 [{schemeName}] 未找到 .sol 文件");
+                    return;
+                }
+
+                // UI线程：创建新控件并加载方案
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
+                    try
+                    {
+                        FrontendControl = new VmFrontendControl(); // 必须在UI线程创建
+                        VmSolution.Load(solFile);                   // 如果 Load 涉及控件，可在UI线程执行
+                        CurrentScheme = $"当前方案：{schemeName}";
+                        MyLogger.Info($"方案 [{schemeName}] 加载进度: 100%");
+                        MyLogger.Info($"方案 [{schemeName}] 加载完成");
+                    }
+                    catch (Exception ex)
+                    {
+                        MyLogger.Error($"方案 [{schemeName}] 加载失败: {ex.Message}");
+                    }
+                });
             }
             catch (Exception ex)
             {
-                MyLogger.Error($"加载方案失败: {ex.Message}");
+                MyLogger.Error($"加载方案 [{schemeName}] 过程中发生异常: {ex}");
             }
         });
 
+
+
+
         /// <summary>
-        /// 监听关闭窗口事件
+        /// 关闭窗口事件
         /// </summary>
         public ICommand WindowClosedCommand => new RelayCommand(() =>
         {
             MyLogger.Info("程序正常关闭！");
         });
-
     }
 }

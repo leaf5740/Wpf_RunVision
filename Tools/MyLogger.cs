@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using Microsoft.Win32;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,13 +9,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using Microsoft.Win32;
-using HandyControl.Controls;
 
-namespace YourApp.Tools
+namespace Wpf_RunVision.Tools
 {
     /// <summary>
     /// WPF 日志管理器（Singleton 单例模式）

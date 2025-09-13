@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-        xmlns:Release="clr-namespace:VMControls.WPF.Release;assembly=VMControls.WPF.Release"
+        xmlns:Release="clr-namespace=VMControls.WPF.Release;assembly=VMControls.WPF"
         xmlns:vm="clr-namespace:Wpf_RunVision.ViewModels"
         mc:Ignorable="d"
         Title="RunVision"
@@ -41,22 +41,16 @@
             <MenuItem Header="{Binding CurrentPermission}"
                       Command="{Binding TogglePermissionCommand}"/>
 
-            <!-- 当前方案菜单（绑定到 CurrentScheme，动态生成子菜单） -->
             <MenuItem Header="{Binding CurrentScheme}">
-                <!-- 绑定 Schemes 集合作为子菜单 -->
                 <MenuItem.ItemsSource>
                     <Binding Path="Schemes"/>
                 </MenuItem.ItemsSource>
-
-                <!-- 子菜单样式：绑定名称和点击事件 -->
                 <MenuItem.ItemContainerStyle>
                     <Style TargetType="MenuItem">
-                        <!-- 菜单文字显示方案名 -->
                         <Setter Property="Header" Value="{Binding}" />
-                        <!-- 绑定命令（SwitchSchemeCommand），从Window的DataContext取 -->
-                        <Setter Property="Command" Value="{Binding DataContext.SwitchSchemeCommand, 
-                RelativeSource={RelativeSource AncestorType=Window}}" />
-                        <!-- 把方案名作为参数传递 -->
+                        <Setter Property="Command" 
+                    Value="{Binding DataContext.SwitchSchemeCommand, 
+                            RelativeSource={RelativeSource AncestorType=Window}}" />
                         <Setter Property="CommandParameter" Value="{Binding}" />
                     </Style>
                 </MenuItem.ItemContainerStyle>
@@ -74,10 +68,13 @@
                 <!-- 右侧区域，占1份 -->
             </Grid.ColumnDefinitions>
 
-             <!--左侧--> 
-            <Border>
-                <Release:VmFrontendControl Grid.Column="0"/>
+             <!--左侧-->
+            <Border Grid.Column="0">
+                <!-- 前端控件容器 -->
+                <ContentControl Content="{Binding FrontendControl}" />
             </Border>
+
+
 
             <!-- 分隔条：可拖动调整左右区域宽度 -->
             <GridSplitter Grid.Column="1"
