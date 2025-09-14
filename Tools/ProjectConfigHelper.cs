@@ -15,7 +15,7 @@ namespace Wpf_RunVision.Tools
         public static ProjectConfigHelper Instance { get; } = new ProjectConfigHelper();
 
         // 当前配置对象
-        public ProjectConfig CurrentConfig { get; private set; } = new ProjectConfig();
+        public ProjectConfigs CurrentConfigs { get; private set; } = new ProjectConfigs();
 
         // 当前配置文件夹路径
         public string CurrentFolder { get; private set; }
@@ -32,13 +32,13 @@ namespace Wpf_RunVision.Tools
 
             if (!File.Exists(filePath))
             {
-                CurrentConfig = new ProjectConfig();
+                CurrentConfigs = new ProjectConfigs();
                 SaveConfig(); // 创建默认配置
                 return;
             }
 
             var json = File.ReadAllText(filePath);
-            CurrentConfig = JsonConvert.DeserializeObject<ProjectConfig>(json) ?? new ProjectConfig();
+            CurrentConfigs = JsonConvert.DeserializeObject<ProjectConfigs>(json) ?? new ProjectConfigs();
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Wpf_RunVision.Tools
                 return;
 
             string filePath = Path.Combine(CurrentFolder, ConfigFileName);
-            var json = JsonConvert.SerializeObject(CurrentConfig, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(CurrentConfigs, Formatting.Indented);
             File.WriteAllText(filePath, json);
         }
 

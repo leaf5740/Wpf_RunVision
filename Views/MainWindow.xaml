@@ -6,6 +6,7 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:Release="clr-namespace=VMControls.WPF.Release;assembly=VMControls.WPF"
+        xmlns:local="clr-namespace:Wpf_RunVision.Converters"
         xmlns:vm="clr-namespace:Wpf_RunVision.ViewModels"
         mc:Ignorable="d"
         Title="RunVision"
@@ -22,6 +23,10 @@
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
+    <!--<Window.Resources>
+        <local:InverseBoolConverter x:Key="InverseBoolConverter"/>
+    </Window.Resources>-->
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -32,15 +37,15 @@
 
         <!-- ================= 顶部菜单栏 ================= -->
         <Menu Grid.Row="0">
-            <MenuItem Header="软件设置">
-                <MenuItem Style="{x:Null}" Header="方案配置" 
-                          Command="{Binding OpenSchemeCommand}" />
+            <!-- 方案配置菜单 -->
+            <MenuItem Header="软件设置" IsEnabled="{Binding CanEditScheme}">
+                <MenuItem Style="{x:Null}" Header="方案配置" Command="{Binding OpenSchemeCommand}"/>
             </MenuItem>
 
-            <!-- 权限菜单（绑定到 ViewModel 的 CurrentPermission 和 TogglePermissionCommand） -->
-            <MenuItem Header="{Binding CurrentPermission}"
-                      Command="{Binding TogglePermissionCommand}"/>
+            <!-- 权限菜单 -->
+            <MenuItem Header="{Binding CurrentPermission}" Command="{Binding TogglePermissionCommand}" />
 
+            <!-- 方案切换菜单 -->
             <MenuItem Header="{Binding CurrentScheme}">
                 <MenuItem.ItemsSource>
                     <Binding Path="Schemes"/>
@@ -49,12 +54,12 @@
                     <Style TargetType="MenuItem">
                         <Setter Property="Header" Value="{Binding}" />
                         <Setter Property="Command" 
-                    Value="{Binding DataContext.SwitchSchemeCommand, 
-                            RelativeSource={RelativeSource AncestorType=Window}}" />
+                    Value="{Binding DataContext.SwitchSchemeCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                         <Setter Property="CommandParameter" Value="{Binding}" />
                     </Style>
                 </MenuItem.ItemContainerStyle>
             </MenuItem>
+
         </Menu>
 
         <!-- ================= 主内容区 ================= -->
@@ -68,7 +73,7 @@
                 <!-- 右侧区域，占1份 -->
             </Grid.ColumnDefinitions>
 
-             <!--左侧-->
+            <!--左侧-->
             <Border Grid.Column="0">
                 <!-- 前端控件容器 -->
                 <ContentControl Content="{Binding FrontendControl}" />
@@ -122,7 +127,7 @@
                                  IsReadOnly="True"
                                  VerticalScrollBarVisibility="Auto"/>
                 </hc:TabItem>
-                
+
             </hc:TabControl>
         </Grid>
     </Grid>

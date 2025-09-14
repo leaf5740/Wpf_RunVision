@@ -144,7 +144,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\ProjectConfig.cs" />
+    <Compile Include="Converters\InverseBoolConverter.cs" />
+    <Compile Include="Models\CameraModel.cs" />
+    <Compile Include="Models\ProjectConfigs.cs" />
     <Compile Include="Tools\KeyboardHelper.cs" />
     <Compile Include="Tools\ProjectConfigHelper.cs" />
     <Compile Include="Tools\MyLogger.cs" />

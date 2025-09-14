@@ -49,6 +49,14 @@ namespace Wpf_RunVision.ViewModels
             set => SetProperty(ref _frontendControl, value);
         }
 
+        // 是否允许编辑方案（登录后禁用）
+        private bool _canEditScheme = false;
+        public bool CanEditScheme
+        {
+            get => _canEditScheme;
+            set => SetProperty(ref _canEditScheme, value);
+        }
+
         public MainViewModel()
         {
             // 初始化加载方案列表
@@ -81,9 +89,8 @@ namespace Wpf_RunVision.ViewModels
                     string configFile = Path.Combine(folder, "config.json");
                     if (!File.Exists(configFile))
                     {
-                        ProjectConfigHelper.Instance.CurrentConfig.Name = folderName;
-                        ProjectConfigHelper.Instance.CurrentConfig.Exposure = 50;
-                        ProjectConfigHelper.Instance.SaveConfig();
+                        // 创建默认配置并保存
+                        //ProjectConfigHelper.Instance.SaveConfig();
                     }
                 }
             }
@@ -116,6 +123,7 @@ namespace Wpf_RunVision.ViewModels
             if (CurrentPermission == "当前权限：工程师")
             {
                 CurrentPermission = "当前权限：员工";
+                CanEditScheme = false;
                 return;
             }
 
@@ -125,9 +133,14 @@ namespace Wpf_RunVision.ViewModels
             permissionWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             bool? dia = permissionWindow.ShowDialog();
             if (dia == true)
+            {
                 CurrentPermission = "当前权限：工程师";
+                CanEditScheme = true;
+            }
             else
+            {
                 KeyboardHelper.CloseKeyboard();
+            }
         });
 
         /// <summary>
@@ -207,9 +220,6 @@ namespace Wpf_RunVision.ViewModels
                 MyLogger.Error($"加载方案 [{schemeName}] 过程中发生异常: {ex}");
             }
         });
-
-
-
 
         /// <summary>
         /// 关闭窗口事件
