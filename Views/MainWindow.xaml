@@ -6,7 +6,6 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:Release="clr-namespace=VMControls.WPF.Release;assembly=VMControls.WPF"
-        xmlns:local="clr-namespace:Wpf_RunVision.Converters"
         xmlns:vm="clr-namespace:Wpf_RunVision.ViewModels"
         mc:Ignorable="d"
         Title="RunVision"
@@ -16,16 +15,11 @@
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized">
 
-    <!-- 关闭窗口时调用 WindowClosedCommand -->
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closed">
             <i:InvokeCommandAction Command="{Binding WindowClosedCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
-
-    <!--<Window.Resources>
-        <local:InverseBoolConverter x:Key="InverseBoolConverter"/>
-    </Window.Resources>-->
 
     <Grid>
         <Grid.RowDefinitions>

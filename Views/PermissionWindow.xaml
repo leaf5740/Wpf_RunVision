@@ -13,7 +13,6 @@
         ShowInTaskbar="False"
         WindowStyle="SingleBorderWindow">
 
-    <!-- 关闭窗口时调用 WindowClosedCommand -->
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closed">
             <i:InvokeCommandAction Command="{Binding WindowClosedCommand}" />

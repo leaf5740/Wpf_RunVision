@@ -50,7 +50,7 @@ namespace Wpf_RunVision.ViewModels
         }
 
         // 是否允许编辑方案（登录后禁用）
-        private bool _canEditScheme = false;
+        private bool _canEditScheme = true;
         public bool CanEditScheme
         {
             get => _canEditScheme;

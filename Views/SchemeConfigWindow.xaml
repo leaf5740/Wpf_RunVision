@@ -4,15 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
-        xmlns:local="clr-namespace:Wpf_RunVision.ViewModels"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize" 
+        ResizeMode="NoResize"
         ShowInTaskbar="False"
         Title="方案配置窗口" Height="450" Width="800">
 
-    <!-- 关闭窗口时调用 WindowClosedCommand -->
+    <!-- 窗口关闭时触发 ViewModel 的保存命令 -->
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closed">
             <i:InvokeCommandAction Command="{Binding WindowClosedCommand}" />
@@ -20,57 +19,133 @@
     </i:Interaction.Triggers>
 
     <Grid>
+        <!-- 窗口整体分两行，第一行可用于菜单/工具栏，第二行为主要内容 -->
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <hc:TabControl Grid.Row="0" x:Name="TabControlDemo" 
+        <!-- 主体 TabControl -->
+        <hc:TabControl Grid.Row="1" x:Name="TabControlDemo" 
                        ShowContextMenu="False" 
                        IsAnimationEnabled="True" 
                        ShowCloseButton="False" 
                        IsDraggable="True" 
                        IsTabFillEnabled="True">
 
+            <!-- 相机配置 Tab -->
             <hc:TabItem Header="相机配置">
-                <Grid Background="#FFB23FE8">
+                <Grid>
+                    <!-- 分两列：左侧 DataGrid、右侧操作区 -->
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="2*"/>
+                        <!-- 左侧宽度占两份 -->
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <!-- 右侧操作区占一份 -->
                     </Grid.ColumnDefinitions>
 
-                    <DataGrid Grid.Row="0" Grid.Column="0"
+                    <!-- 左侧：相机列表 DataGrid -->
+                    <DataGrid Grid.Column="0"
                               Style="{StaticResource DataGrid.Small}" 
-                              HeadersVisibility="All" 
-                              RowHeaderWidth="60" 
+                              HeadersVisibility="Column"   
+                              RowHeaderWidth="0"
                               AutoGenerateColumns="False" 
-                              ItemsSource="{Binding DataList}" 
-                              hc:DataGridAttach.ShowRowNumber="True">
+                              CanUserSortColumns="False"
+                              ItemsSource="{Binding Cameras}" 
+                              SelectedItem="{Binding SelectedCamera, Mode=TwoWay}">
                         <DataGrid.Columns>
-                            <!-- 名称 -->
-                            <DataGridTextColumn Binding="{Binding Name}" Header="相机名称"/>
-                            <DataGridTemplateColumn Header="SN" Width="100">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Type}" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                                <DataGridTemplateColumn.CellEditingTemplate>
-                                    <DataTemplate>
-                                        <ComboBox ItemsSource="{Binding DataContext.DemoTypes, 
-                                                  RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                                  SelectedItem="{Binding Type, Mode=TwoWay}" />
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellEditingTemplate>
-                            </DataGridTemplateColumn>
-
-                            <!-- 备注 -->
+                            <DataGridTextColumn Binding="{Binding Name}" Header="相机名称" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding Type}" Header="SN"/>
                             <DataGridTextColumn Binding="{Binding Remark}" Header="备注"/>
                         </DataGrid.Columns>
                     </DataGrid>
 
+                    <!-- 右侧：操作区 Grid -->
+                    <Grid Grid.Column="1" Margin="30,15,30,0">
+                        <!-- 使用 RowDefinition 来垂直排列控件 -->
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <!-- 品牌 ComboBox -->
+                            <RowDefinition Height="Auto"/>
+                            <!-- SN ComboBox -->
+                            <RowDefinition Height="Auto"/>
+                            <!-- 备注 TextBox -->
+                            <RowDefinition Height="Auto"/>
+                            <!-- 分隔线 -->
+                            <RowDefinition Height="Auto"/>
+                            <!-- 左右按钮 Grid -->
+                            <RowDefinition Height="Auto"/>
+                            <!-- 保存按钮 -->
+                        </Grid.RowDefinitions>
+
+                        <!-- 相机品牌 ComboBox -->
+                        <ComboBox Grid.Row="0"
+                                  hc:InfoElement.Title="相机品牌:" 
+                                  ItemsSource="{Binding CameraBrands}" 
+                                  SelectedItem="{Binding SelectedBrand, Mode=TwoWay}"  
+                                  hc:InfoElement.TitlePlacement="Top"
+                                  Style="{StaticResource ComboBoxExtend}"
+                                  HorizontalAlignment="Stretch"
+                                  ToolTip="必选，相机品牌"
+                                  Margin="0,0,0,10"/>
+
+                        <!-- 相机序列号 ComboBox -->
+                        <ComboBox Grid.Row="1"
+                                  hc:InfoElement.Title="相机SN:" 
+                                  ItemsSource="{Binding AvailableSNs}" 
+                                  SelectedItem="{Binding SelectedSN, Mode=TwoWay}" 
+                                  hc:InfoElement.TitlePlacement="Top"
+                                  Style="{StaticResource ComboBoxExtend}"
+                                  HorizontalAlignment="Stretch"
+                                  ToolTip="必选，相机序列号"
+                                  Margin="0,0,0,10"/>
+
+                        <!-- 相机备注 TextBox -->
+                        <TextBox Grid.Row="2"
+                                 hc:InfoElement.Title="相机备注:" 
+                                 Text="{Binding SelectedRemark, Mode=TwoWay}"
+                                 hc:InfoElement.TitlePlacement="Top"
+                                 Style="{StaticResource TextBoxExtend}"
+                                 HorizontalAlignment="Stretch"
+                                 hc:InfoElement.Placeholder="可空"
+                                 ToolTip="可选，相机备注信息"
+                                 Margin="0,0,0,10"/>
+
+                        <!-- 分隔线 -->
+                        <hc:Divider Grid.Row="3" LineStrokeThickness="1" Orientation="Horizontal" Margin="0,0,0,10"/>
+
+                        <!-- 左右按钮 Grid -->
+                        <Grid Grid.Row="4" Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <!-- 左侧按钮左对齐 -->
+                                <ColumnDefinition Width="Auto" />
+                                <!-- 分隔线固定宽度 -->
+                                <ColumnDefinition Width="*" />
+                                <!-- 右侧按钮右对齐 -->
+                            </Grid.ColumnDefinitions>
+
+                            <!-- 删除按钮 -->
+                            <Button Grid.Column="0" Content="删除" Command="{Binding DeleteSelectedCommand}" Width="90" HorizontalAlignment="Left"/>
+
+                            <!-- 分隔线 -->
+                            <hc:Divider Grid.Column="1" LineStrokeThickness="2" LineStroke="{DynamicResource DarkPrimaryBrush}" Orientation="Vertical" MaxHeight="16" HorizontalAlignment="Center"/>
+
+                            <!-- 添加相机按钮 -->
+                            <Button Grid.Column="2" Content="添加相机" Command="{Binding AddCameraCommand}" Width="90" HorizontalAlignment="Right"/>
+                        </Grid>
+
+                        <!-- 保存配置按钮 -->
+                        <Button Grid.Row="5"
+                                Content="保存配置" 
+                                Command="{Binding SaveConfigCommand}" 
+                                HorizontalAlignment="Stretch"/>
+                    </Grid>
+
                 </Grid>
             </hc:TabItem>
+
+            <!-- 其他模块 Tab -->
             <hc:TabItem Header="PLC配置">
                 <hc:SimplePanel Background="#FF3FE8E8"/>
             </hc:TabItem>
@@ -89,7 +164,7 @@
             <hc:TabItem Header="通用设置">
                 <hc:SimplePanel Background="#FFE5503F"/>
             </hc:TabItem>
-        </hc:TabControl>
 
+        </hc:TabControl>
     </Grid>
 </Window>
