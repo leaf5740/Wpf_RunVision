@@ -11,7 +11,6 @@ namespace Wpf_RunVision.Views
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = new ViewModels.MainViewModel();
             MyLogger.Instance.Initialize(LogRichTextBox, "logs", 500, 300);
             MyLogger.Info("程序启动！");
           

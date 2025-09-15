@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:vm="clr-namespace:Wpf_RunVision.ViewModels"
         mc:Ignorable="d"
         Title="当前权限：员工"
         Height="300" Width="400"
@@ -13,6 +14,10 @@
         ShowInTaskbar="False"
         WindowStyle="SingleBorderWindow">
 
+    <Window.DataContext>
+        <vm:PermissionViewModel/>
+    </Window.DataContext>
+    
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closed">
             <i:InvokeCommandAction Command="{Binding WindowClosedCommand}" />
@@ -27,18 +32,10 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- ==============================
-             用户头像（随密码变化刷新）
-        =============================== -->
         <hc:Gravatar Grid.Row="0"
                      Height="50" Width="50"
                      Id="{Binding Password}"/>
 
-        <!-- ==============================
-             密码输入框
-             - 绑定 Password（通过附加属性/行为）
-             - 带提示、标题、必填标识
-        =============================== -->
         <hc:PasswordBox Grid.Row="1"
                         x:Name="HCPasswordBox"
                         ShowEyeButton="True"
@@ -48,11 +45,6 @@
                         Margin="0,10,0,0"
                         PreviewKeyDown="HCPasswordBox_PreviewKeyDown"/>
 
-        <!-- ==============================
-             确认按钮
-             - 执行 ConfirmCommand
-             - 传递当前窗口作为参数
-        =============================== -->
         <Button Grid.Row="2" 
                 Content="确定"
                 Margin="0,20,0,0" 
@@ -62,10 +54,6 @@
                 CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                 Style="{StaticResource ButtonPrimary}"/>
 
-        <!-- ==============================
-             屏幕键盘按钮
-             - 执行 ShowKeyboardCommand
-        =============================== -->
         <Button Grid.Row="3" 
                 Content="屏幕键盘"
                 Margin="0,10,0,0" 

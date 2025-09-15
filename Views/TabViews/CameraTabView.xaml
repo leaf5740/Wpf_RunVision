@@ -1,0 +1,114 @@
+﻿<UserControl x:Class="Wpf_RunVision.Views.TabViews.CameraTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Wpf_RunVision.Views.TabViews"
+             xmlns:vm="clr-namespace:Wpf_RunVision.ViewModels.TabViewModels"
+             xmlns:hc="https://handyorg.github.io/handycontrol">
+
+    <UserControl.DataContext>
+        <vm:CameraTabViewModel />
+    </UserControl.DataContext>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <DataGrid Grid.Column="0"
+                  Style="{StaticResource DataGrid.Small}"
+                  HeadersVisibility="All"
+                  RowHeaderWidth="35"
+                  hc:DataGridAttach.ShowRowNumber="True"
+                  AutoGenerateColumns="False"
+                  CanUserSortColumns="False"
+                  ItemsSource="{Binding Cameras}"
+                  SelectedItem="{Binding SelectedCamera, Mode=TwoWay}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding Name}" Header="相机名称" IsReadOnly="True"/>
+                <DataGridTextColumn Binding="{Binding Type}" Header="SN"/>
+                <DataGridTextColumn Binding="{Binding Remark}" Header="备注"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Grid Grid.Column="1" Margin="30,15,30,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ComboBox Grid.Row="0"
+                      hc:InfoElement.Title="相机品牌:"
+                      ItemsSource="{Binding CameraBrands}"
+                      SelectedItem="{Binding SelectedBrand, Mode=TwoWay}"
+                      hc:InfoElement.TitlePlacement="Top"
+                      Style="{StaticResource ComboBoxExtend}"
+                      HorizontalAlignment="Stretch"
+                      ToolTip="必选，相机品牌"
+                      Margin="0,0,0,10"/>
+
+            <ComboBox Grid.Row="1"
+                      hc:InfoElement.Title="相机SN:"
+                      ItemsSource="{Binding AvailableSNs}"
+                      SelectedItem="{Binding SelectedSN, Mode=TwoWay}"
+                      hc:InfoElement.TitlePlacement="Top"
+                      Style="{StaticResource ComboBoxExtend}"
+                      HorizontalAlignment="Stretch"
+                      ToolTip="必选，相机序列号"
+                      Margin="0,0,0,10"/>
+
+            <TextBox Grid.Row="2"
+                     hc:InfoElement.Title="相机备注:"
+                     Text="{Binding SelectedRemark, Mode=TwoWay}"
+                     hc:InfoElement.TitlePlacement="Top"
+                     Style="{StaticResource TextBoxExtend}"
+                     HorizontalAlignment="Stretch"
+                     hc:InfoElement.Placeholder="可空"
+                     ToolTip="可选，相机备注信息"
+                     Margin="0,0,0,10"/>
+
+            <hc:Divider Grid.Row="3"
+                        LineStrokeThickness="1"
+                        Orientation="Horizontal"
+                        Margin="0,0,0,10"/>
+
+            <Grid Grid.Row="4" Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Content="删除"
+                        Command="{Binding DeleteSelectedCommand}"
+                        Width="90"
+                        HorizontalAlignment="Left"/>
+
+                <hc:Divider Grid.Column="1"
+                            LineStrokeThickness="2"
+                            LineStroke="{DynamicResource DarkPrimaryBrush}"
+                            Orientation="Vertical"
+                            MaxHeight="16"
+                            HorizontalAlignment="Center"/>
+
+                <Button Grid.Column="2"
+                        Content="添加相机"
+                        Command="{Binding AddCameraCommand}"
+                        Width="90"
+                        HorizontalAlignment="Right"/>
+            </Grid>
+
+            <Button Grid.Row="5"
+                    Content="保存配置"
+                    Command="{Binding SaveConfigCommand}"
+                    HorizontalAlignment="Stretch"/>
+        </Grid>
+    </Grid>
+</UserControl>

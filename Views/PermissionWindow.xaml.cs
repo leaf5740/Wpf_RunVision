@@ -11,7 +11,6 @@ namespace Wpf_RunVision.Views
         public PermissionWindow()
         {
             InitializeComponent();
-            this.DataContext = new ViewModels.PermissionViewModel();
         }
 
         private void HCPasswordBox_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)

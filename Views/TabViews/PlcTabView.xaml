@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="Wpf_RunVision.Views.TabViews.PlcTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Wpf_RunVision.Views.TabViews"
+             xmlns:vm="clr-namespace:Wpf_RunVision.ViewModels.TabViewModels">
+    
+    <!-- ViewModel 绑定 -->
+    <UserControl.DataContext>
+        <vm:PlcTabViewModel/>
+    </UserControl.DataContext>
+
+
+    <Grid Background="#FF3FE8E8">
+            
+    </Grid>
+</UserControl>

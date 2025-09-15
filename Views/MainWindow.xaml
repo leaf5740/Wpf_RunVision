@@ -15,6 +15,10 @@
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized">
 
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+    
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closed">
             <i:InvokeCommandAction Command="{Binding WindowClosedCommand}" />
@@ -24,22 +28,16 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- 第一行：菜单栏 -->
             <RowDefinition Height="*"/>
-            <!-- 第二行：主内容区域 -->
         </Grid.RowDefinitions>
 
-        <!-- ================= 顶部菜单栏 ================= -->
         <Menu Grid.Row="0">
-            <!-- 方案配置菜单 -->
             <MenuItem Header="软件设置" IsEnabled="{Binding CanEditScheme}">
                 <MenuItem Style="{x:Null}" Header="方案配置" Command="{Binding OpenSchemeCommand}"/>
             </MenuItem>
 
-            <!-- 权限菜单 -->
             <MenuItem Header="{Binding CurrentPermission}" Command="{Binding TogglePermissionCommand}" />
 
-            <!-- 方案切换菜单 -->
             <MenuItem Header="{Binding CurrentScheme}">
                 <MenuItem.ItemsSource>
                     <Binding Path="Schemes"/>
@@ -56,26 +54,17 @@
 
         </Menu>
 
-        <!-- ================= 主内容区 ================= -->
         <Grid Grid.Row="1" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
-                <!-- 左侧区域，占2份 -->
                 <ColumnDefinition Width="Auto"/>
-                <!-- 中间分隔条 -->
                 <ColumnDefinition Width="*"/>
-                <!-- 右侧区域，占1份 -->
             </Grid.ColumnDefinitions>
 
-            <!--左侧-->
             <Border Grid.Column="0">
-                <!-- 前端控件容器 -->
                 <ContentControl Content="{Binding FrontendControl}" />
             </Border>
 
-
-
-            <!-- 分隔条：可拖动调整左右区域宽度 -->
             <GridSplitter Grid.Column="1"
                           Width="1"
                           HorizontalAlignment="Center"
@@ -85,7 +74,6 @@
                           Background="Transparent"
                           ShowsPreview="True"/>
 
-            <!-- 右侧：HandyControl 的 TabControl，用于切换设备信息和日志 -->
             <hc:TabControl Grid.Column="2" Margin="0,0,2,0"
                            ShowContextMenu="False"
                            IsAnimationEnabled="True"
@@ -94,17 +82,13 @@
                            IsTabFillEnabled="True"
                            >
 
-                <!-- 设备信息标签页 -->
                 <hc:TabItem Header="设备信息" IsSelected="True">
                     <hc:SimplePanel Background="{DynamicResource RegionBrush}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="250"/>
-                                <!-- 顶部固定高度 -->
                                 <RowDefinition Height="Auto"/>
-                                <!-- 中间自适应 -->
                                 <RowDefinition Height="*"/>
-                                <!-- 剩余空间 -->
                             </Grid.RowDefinitions>
                             <Border Grid.Row="0" Margin="0,2,0,2"
                                     BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
@@ -114,7 +98,6 @@
                     </hc:SimplePanel>
                 </hc:TabItem>
 
-                <!-- 日志标签页 -->
                 <hc:TabItem Header="日志">
                     <RichTextBox Name="LogRichTextBox"
                                  BorderThickness="0"
