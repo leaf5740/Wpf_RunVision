@@ -11,7 +11,7 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
-        Title="方案配置窗口" Height="450" Width="800">
+        Title="方案配置窗口" Height="700" Width="1200">
 
     <Window.DataContext>
         <vm:SchemeConfigViewModel/>

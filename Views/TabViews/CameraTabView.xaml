@@ -13,12 +13,11 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <DataGrid Grid.Column="0"
-                  Style="{StaticResource DataGrid.Small}"
                   HeadersVisibility="All"
                   RowHeaderWidth="35"
                   hc:DataGridAttach.ShowRowNumber="True"
@@ -89,6 +88,7 @@
                         Content="删除"
                         Command="{Binding DeleteSelectedCommand}"
                         Width="90"
+                        Height="35"
                         HorizontalAlignment="Left"/>
 
                 <hc:Divider Grid.Column="1"
@@ -101,11 +101,13 @@
                 <Button Grid.Column="2"
                         Content="添加相机"
                         Command="{Binding AddCameraCommand}"
+                        Height="35"
                         Width="90"
                         HorizontalAlignment="Right"/>
             </Grid>
 
             <Button Grid.Row="5"
+                    Height="40"
                     Content="保存配置"
                     Command="{Binding SaveConfigCommand}"
                     HorizontalAlignment="Stretch"/>
