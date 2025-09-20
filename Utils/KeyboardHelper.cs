@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using WindowsInput;
 using WindowsInput.Native;
 
-namespace Wpf_RunVision.Tools
+namespace Wpf_RunVision.Utils
 {
     /// <summary>
     /// 屏幕键盘辅助类，兼容 Windows 10 和 Windows 11。

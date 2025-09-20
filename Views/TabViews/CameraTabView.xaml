@@ -26,8 +26,8 @@
                   ItemsSource="{Binding Cameras}"
                   SelectedItem="{Binding SelectedCamera, Mode=TwoWay}">
             <DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding Name}" Header="相机名称" IsReadOnly="True"/>
-                <DataGridTextColumn Binding="{Binding Type}" Header="SN"/>
+                <DataGridTextColumn Binding="{Binding Brand}" Header="相机名称" IsReadOnly="True"/>
+                <DataGridTextColumn Binding="{Binding Sn}" Header="SN"/>
                 <DataGridTextColumn Binding="{Binding Remark}" Header="备注"/>
             </DataGrid.Columns>
         </DataGrid>

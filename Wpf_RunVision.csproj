@@ -149,14 +149,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\CameraModel.cs" />
+    <Compile Include="Models\CameraModels.cs" />
+    <Compile Include="Models\PlcModels.cs" />
     <Compile Include="Models\ProjectConfigs.cs" />
+    <Compile Include="Services\Cameras\CameraFactory.cs" />
     <Compile Include="Services\Cameras\DahengCameraService .cs" />
     <Compile Include="Services\Cameras\HikvisionCameraService .cs" />
     <Compile Include="Services\Cameras\ICameraService.cs" />
-    <Compile Include="Tools\KeyboardHelper.cs" />
-    <Compile Include="Tools\ProjectConfigHelper.cs" />
-    <Compile Include="Tools\MyLogger.cs" />
+    <Compile Include="Services\Core\VisionCore.cs" />
+    <Compile Include="Services\Plc\InovancePlcService.cs" />
+    <Compile Include="Services\Plc\IPlcService.cs" />
+    <Compile Include="Services\Plc\MitsubishiPlcService .cs" />
+    <Compile Include="Services\Plc\PlcFactory.cs" />
+    <Compile Include="Services\Plc\PlcProtocol.cs" />
+    <Compile Include="Utils\KeyboardHelper.cs" />
+    <Compile Include="Utils\ProjectConfigHelper.cs" />
+    <Compile Include="Utils\MyLogger.cs" />
     <Compile Include="ViewModels\TabViewModels\CameraTabViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\PermissionViewModel.cs" />
@@ -275,7 +283,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
-    <Folder Include="Services\Plc\Protocols\" />
+    <Folder Include="Services\MySql\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\CommunityToolkit.Mvvm.8.4.0\build\CommunityToolkit.Mvvm.targets" Condition="Exists('packages\CommunityToolkit.Mvvm.8.4.0\build\CommunityToolkit.Mvvm.targets')" />

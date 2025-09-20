@@ -12,7 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
 
-namespace Wpf_RunVision.Tools
+namespace Wpf_RunVision.Utils
 {
     /// <summary>
     /// WPF 日志管理器（Singleton 单例模式）

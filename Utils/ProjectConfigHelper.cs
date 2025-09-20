@@ -2,7 +2,7 @@
 using System.IO;
 using Wpf_RunVision.Models;
 
-namespace Wpf_RunVision.Tools
+namespace Wpf_RunVision.Utils
 {
     /// <summary>
     /// 配置管理 + 存储（单例）
