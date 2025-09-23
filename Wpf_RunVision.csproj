@@ -156,12 +156,11 @@
     <Compile Include="Services\Cameras\DahengCameraService .cs" />
     <Compile Include="Services\Cameras\HikvisionCameraService .cs" />
     <Compile Include="Services\Cameras\ICameraService.cs" />
-    <Compile Include="Services\Core\VisionCore.cs" />
     <Compile Include="Services\Plc\InovancePlcService.cs" />
     <Compile Include="Services\Plc\IPlcService.cs" />
-    <Compile Include="Services\Plc\MitsubishiPlcService .cs" />
+    <Compile Include="Services\Plc\MitsubishiPlcService.cs" />
+    <Compile Include="Services\Plc\ModbusTcpBase .cs" />
     <Compile Include="Services\Plc\PlcFactory.cs" />
-    <Compile Include="Services\Plc\PlcProtocol.cs" />
     <Compile Include="Utils\KeyboardHelper.cs" />
     <Compile Include="Utils\ProjectConfigHelper.cs" />
     <Compile Include="Utils\MyLogger.cs" />
@@ -282,6 +281,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Core\" />
     <Folder Include="Resources\" />
     <Folder Include="Services\MySql\" />
   </ItemGroup>

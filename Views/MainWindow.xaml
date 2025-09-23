@@ -18,7 +18,7 @@
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
-    
+
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closed">
             <i:InvokeCommandAction Command="{Binding WindowClosedCommand}" />
@@ -74,38 +74,31 @@
                           Background="Transparent"
                           ShowsPreview="True"/>
 
-            <hc:TabControl Grid.Column="2" Margin="0,0,2,0"
-                           ShowContextMenu="False"
-                           IsAnimationEnabled="True"
-                           ShowCloseButton="False"
-                           IsDraggable="True"
-                           IsTabFillEnabled="True"
-                           >
+            <hc:SimplePanel Grid.Column="2" Margin="2,0,2,0"
+                            Background="{DynamicResource RegionBrush}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="250"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Border Grid.Row="0" Margin="0,2,0,2"
+                            BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
+                            Background="{DynamicResource RegionBrush}"
+                            CornerRadius="4"/>
 
-                <hc:TabItem Header="设备信息" IsSelected="True">
-                    <hc:SimplePanel Background="{DynamicResource RegionBrush}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="250"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border Grid.Row="0" Margin="0,2,0,2"
-                                    BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
-                                    Background="{DynamicResource RegionBrush}"
-                                    CornerRadius="4"/>
-                        </Grid>
-                    </hc:SimplePanel>
-                </hc:TabItem>
+                    <Border Grid.Row="1" Margin="0,0,0,2"
+                            BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
+                            Background="{DynamicResource RegionBrush}"
+                            CornerRadius="4">
+                    <RichTextBox x:Name="LogRichTextBox"
+                                     BorderThickness="0"
+                                     IsReadOnly="True"
+                                     VerticalScrollBarVisibility="Auto"/>
+                    </Border>
 
-                <hc:TabItem Header="日志">
-                    <RichTextBox Name="LogRichTextBox"
-                                 BorderThickness="0"
-                                 IsReadOnly="True"
-                                 VerticalScrollBarVisibility="Auto"/>
-                </hc:TabItem>
+                </Grid>
+            </hc:SimplePanel>
 
-            </hc:TabControl>
         </Grid>
     </Grid>
 </Window>

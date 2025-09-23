@@ -10,6 +10,10 @@ namespace Wpf_RunVision.Services.Cameras
     {
         public string Brand => "大恒";
 
+        public DahengCameraService(string sn)
+        {
+            
+        }
         public List<string> GetAvailableSNs()
         {
             // TODO: 替换为真实 SDK 获取逻辑

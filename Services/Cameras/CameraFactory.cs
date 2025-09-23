@@ -13,9 +13,9 @@ namespace Wpf_RunVision.Services.Cameras
             switch (brand)
             {
                 case "海康":
-                    return new HikvisionCameraService();  // 这里传 sn，如果构造函数需要
+                    return new HikvisionCameraService(sn);
                 case "大恒":
-                    return new DahengCameraService();     // 同理
+                    return new DahengCameraService(sn);   
                 default:
                     throw new NotSupportedException($"未支持的相机品牌: {brand}");
             }

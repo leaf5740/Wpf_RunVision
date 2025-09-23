@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Input;
 using Wpf_RunVision.Models;
 using Wpf_RunVision.Services.Cameras;
 using Wpf_RunVision.Utils;
@@ -36,13 +35,12 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
         // 当前输入的相机备注（TextBox 绑定）
         private string _selectedRemark;
 
-        // 删除选中相机命令
+        // 当前输入的相机完成信号（TextBox 绑定）
+        private string _plcCompleteAddress;
+
+        // 命令字段
         private RelayCommand _deleteSelectedCommand;
-
-        // 添加相机命令
         private RelayCommand _addCameraCommand;
-
-        // 保存配置命令
         private RelayCommand _saveConfigCommand;
 
         #endregion
@@ -76,7 +74,7 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
                 {
                     _selectedCamera = value;
                     OnPropertyChanged(nameof(SelectedCamera));
-                    _deleteSelectedCommand?.NotifyCanExecuteChanged(); // 更新删除命令状态
+                    _deleteSelectedCommand?.NotifyCanExecuteChanged();
                 }
             }
         }
@@ -93,7 +91,7 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
                 {
                     _selectedBrand = value;
                     OnPropertyChanged(nameof(SelectedBrand));
-                    UpdateAvailableSNByBrand(_selectedBrand); // 刷新序列号列表
+                    UpdateAvailableSNByBrand(_selectedBrand);
                 }
             }
         }
@@ -115,12 +113,35 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
         }
 
         /// <summary>
+        /// 当前输入的相机完成信号（TextBox 绑定）
+        /// </summary>
+        public string PlcCompleteAddress
+        {
+            get { return _plcCompleteAddress; }
+            set
+            {
+                if (_plcCompleteAddress != value)
+                {
+                    _plcCompleteAddress = value;
+                    OnPropertyChanged(nameof(PlcCompleteAddress));
+                }
+            }
+        }
+
+        /// <summary>
         /// 当前输入的相机备注（TextBox 绑定）
         /// </summary>
         public string SelectedRemark
         {
-            get => _selectedRemark;
-            set => SetProperty(ref _selectedRemark, value);
+            get { return _selectedRemark; }
+            set
+            {
+                if (_selectedRemark != value)
+                {
+                    _selectedRemark = value;
+                    OnPropertyChanged(nameof(SelectedRemark));
+                }
+            }
         }
 
         #endregion
@@ -129,61 +150,97 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
 
         public CameraTabViewModel()
         {
-            // 初始化相机列表，从项目配置读取
-            var configs = ProjectConfigHelper.Instance.CurrentConfigs;
-            Cameras = new ObservableCollection<CameraModels>(ProjectConfigHelper.Instance.CurrentConfigs.Cameras ?? new List<CameraModels>());
-
-            // 初始化序列号列表
+            // 初始化集合
+            Cameras = new ObservableCollection<CameraModels>();
+            CameraBrands = new ObservableCollection<string>();
             AvailableSNs = new ObservableCollection<string>();
 
-            // 自动注册所有实现了ICameraService的服务（核心修改）
+            // 加载相机服务
             _cameraServices = GetAllCameraServices();
 
-            // 初始化品牌列表（去重处理）
-            CameraBrands = new ObservableCollection<string>(
-                _cameraServices.Select(s => s.Brand).Distinct()
-            );
-
-            // 可选：默认选中第一个品牌
-            // if (CameraBrands.Count > 0)
-            //     SelectedBrand = CameraBrands[0];
+            // 初始化数据
+            LoadCamerasFromConfig();
+            InitializeCameraBrands();
         }
 
         #endregion
 
-        #region 核心方法：自动扫描并注册所有相机服务
+        #region 初始化方法
+
+        /// <summary>
+        /// 从配置加载相机列表
+        /// </summary>
+        private void LoadCamerasFromConfig()
+        {
+            try
+            {
+                var configs = ProjectConfigHelper.Instance.CurrentConfigs;
+                if (configs.Cameras != null && configs.Cameras.Any())
+                {
+                    foreach (var camera in configs.Cameras)
+                    {
+                        Cameras.Add(camera);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"加载相机配置失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        /// <summary>
+        /// 初始化相机品牌列表
+        /// </summary>
+        private void InitializeCameraBrands()
+        {
+            try
+            {
+                var distinctBrands = _cameraServices
+                    .Select(s => s.Brand)
+                    .Where(brand => !string.IsNullOrEmpty(brand))
+                    .Distinct();
+
+                foreach (var brand in distinctBrands)
+                {
+                    CameraBrands.Add(brand);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"初始化品牌列表失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
 
         /// <summary>
         /// 通过反射扫描程序集中所有实现了ICameraService的类，并创建实例
         /// </summary>
-        /// <returns>所有相机服务实例列表</returns>
         private List<ICameraService> GetAllCameraServices()
         {
             var cameraServices = new List<ICameraService>();
 
             try
             {
-                // 获取当前程序集（如果服务在其他程序集，可改为Assembly.Load("其他程序集名称")）
                 var assembly = Assembly.GetExecutingAssembly();
-
-                // 查找所有实现了ICameraService接口的非抽象类
                 var serviceTypes = assembly.GetTypes()
-                    .Where(type =>
-                        typeof(ICameraService).IsAssignableFrom(type)  // 实现了接口
-                        && !type.IsAbstract                          // 不是抽象类
-                        && !type.IsInterface                         // 不是接口本身
-                        && type.GetConstructor(Type.EmptyTypes) != null); // 有无参数构造函数
+                    .Where(type => typeof(ICameraService).IsAssignableFrom(type)
+                                   && !type.IsAbstract
+                                   && !type.IsInterface
+                                   && type.GetConstructor(Type.EmptyTypes) != null);
 
-                // 为每个找到的类型创建实例
                 foreach (var type in serviceTypes)
                 {
-                    var service = (ICameraService)Activator.CreateInstance(type);
-                    cameraServices.Add(service);
+                    var service = Activator.CreateInstance(type) as ICameraService;
+                    if (service != null)
+                    {
+                        cameraServices.Add(service);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"自动注册相机服务失败：{ex.Message}", "初始化错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"自动注册相机服务失败：{ex.Message}", "初始化错误",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             return cameraServices;
@@ -191,42 +248,59 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
 
         #endregion
 
-        #region 其他方法
+        #region 业务逻辑
 
         /// <summary>
         /// 根据选中的品牌更新可用序列号列表
         /// </summary>
-        /// <param name="brand">选中的品牌</param>
         private void UpdateAvailableSNByBrand(string brand)
         {
             AvailableSNs.Clear();
+            SelectedSN = null;
+
             if (string.IsNullOrEmpty(brand))
-            {
-                SelectedSN = null;
                 return;
-            }
 
             try
             {
                 var service = _cameraServices.FirstOrDefault(s => s.Brand == brand);
-                var sns = service?.GetAvailableSNs() ?? new List<string>();
+                if (service == null)
+                {
+                    MessageBox.Show($"未找到{brand}品牌的相机服务", "警告",
+                                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var sns = service.GetAvailableSNs() ?? new List<string>();
                 foreach (var sn in sns)
+                {
                     AvailableSNs.Add(sn);
-                SelectedSN = AvailableSNs.FirstOrDefault();
+                }
+
+                if (AvailableSNs.Any())
+                    SelectedSN = AvailableSNs.First();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"获取{brand}相机序列号失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                SelectedSN = null;
+                MessageBox.Show($"获取{brand}序列号失败：{ex.Message}", "错误",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         /// <summary>
-        /// 判断序列号是否已存在（避免重复添加）
+        /// 判断序列号是否已存在
         /// </summary>
         private bool IsSnDuplicated(string sn)
         {
             return Cameras.Any(camera => camera.Sn == sn);
+        }
+
+        /// <summary>
+        /// 判断PLC完成信号是否已存在
+        /// </summary>
+        private bool IsPlcAddressDuplicated(string address)
+        {
+            return Cameras.Any(camera => camera.PlcCompleteAddress == address);
         }
 
         #endregion
@@ -236,94 +310,136 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
         /// <summary>
         /// 添加相机命令
         /// </summary>
-        public ICommand AddCameraCommand
+        public RelayCommand AddCameraCommand
         {
             get
             {
                 if (_addCameraCommand == null)
                 {
-                    _addCameraCommand = new RelayCommand(() =>
-                    {
-                        // 校验品牌和序列号
-                        if (string.IsNullOrEmpty(SelectedBrand) || string.IsNullOrEmpty(SelectedSN))
-                        {
-                            MessageBox.Show("相机品牌和序列号不能为空！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                            return;
-                        }
-
-                        // 防止重复序列号
-                        if (IsSnDuplicated(SelectedSN))
-                        {
-                            MessageBox.Show("该序列号已存在！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                            return;
-                        }
-
-                        // 新建相机配置
-                        var newCamera = new CameraModels
-                        {
-                            Brand = SelectedBrand,
-                            Sn = SelectedSN,
-                            Remark = string.IsNullOrWhiteSpace(SelectedRemark) ? $"{SelectedBrand}品牌相机" : SelectedRemark
-                        };
-
-                        // 添加到列表并更新删除命令状态
-                        Cameras.Add(newCamera);
-                        _deleteSelectedCommand?.NotifyCanExecuteChanged();
-                    });
+                    _addCameraCommand = new RelayCommand(AddCamera);
                 }
                 return _addCameraCommand;
             }
         }
 
         /// <summary>
+        /// 添加相机执行逻辑
+        /// </summary>
+        private void AddCamera()
+        {
+            // 输入验证
+            if (string.IsNullOrEmpty(SelectedBrand) ||
+                string.IsNullOrEmpty(SelectedSN) ||
+                string.IsNullOrEmpty(PlcCompleteAddress))
+            {
+                MessageBox.Show("相机品牌、序列号和PLC完成信号不能为空！", "错误",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // 重复验证
+            if (IsSnDuplicated(SelectedSN))
+            {
+                MessageBox.Show("该序列号已存在！", "错误",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (IsPlcAddressDuplicated(PlcCompleteAddress))
+            {
+                MessageBox.Show("该PLC完成信号已存在！", "错误",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // 创建新相机
+            var newCamera = new CameraModels
+            {
+                Brand = SelectedBrand,
+                Sn = SelectedSN,
+                PlcCompleteAddress = PlcCompleteAddress,
+                Remark = string.IsNullOrWhiteSpace(SelectedRemark)
+                    ? $"{SelectedBrand}相机"
+                    : SelectedRemark
+            };
+
+            Cameras.Add(newCamera);
+        }
+
+        /// <summary>
         /// 删除选中相机命令
         /// </summary>
-        public ICommand DeleteSelectedCommand
+        public RelayCommand DeleteSelectedCommand
         {
             get
             {
                 if (_deleteSelectedCommand == null)
                 {
-                    _deleteSelectedCommand = new RelayCommand(() =>
-                    {
-                        if (SelectedCamera == null)
-                        {
-                            MessageBox.Show("请先选择要删除的相机！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
-                            return;
-                        }
-
-                        Cameras.Remove(SelectedCamera);
-                        _deleteSelectedCommand.NotifyCanExecuteChanged();
-                    },
-                    // 优化CanExecute逻辑：列表非空且有选中项
-                    () => Cameras != null && Cameras.Count > 0 && SelectedCamera != null);
+                    _deleteSelectedCommand = new RelayCommand(DeleteSelected, CanDeleteSelected);
                 }
                 return _deleteSelectedCommand;
             }
         }
 
         /// <summary>
-        /// 保存相机配置命令
+        /// 删除相机执行逻辑
         /// </summary>
-        public ICommand SaveConfigCommand
+        private void DeleteSelected()
+        {
+            if (SelectedCamera != null)
+            {
+                Cameras.Remove(SelectedCamera);
+                SelectedCamera = null; // 清除选中状态
+            }
+        }
+
+        /// <summary>
+        /// 删除命令可用性判断
+        /// </summary>
+        private bool CanDeleteSelected()
+        {
+            return SelectedCamera != null;
+        }
+
+        /// <summary>
+        /// 保存配置命令
+        /// </summary>
+        public RelayCommand SaveConfigCommand
         {
             get
             {
                 if (_saveConfigCommand == null)
                 {
-                    _saveConfigCommand = new RelayCommand(() =>
-                    {
-                        // 保存到项目配置
-                        ProjectConfigHelper.Instance.CurrentConfigs.Cameras = Cameras.ToList();
-                        ProjectConfigHelper.Instance.SaveConfig();
-
-                        MessageBox.Show("配置已保存", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
-                    },
-                    // 优化CanExecute逻辑：允许保存空列表（仅判断列表已初始化）
-                    () => Cameras != null);
+                    _saveConfigCommand = new RelayCommand(SaveConfig, CanSaveConfig);
                 }
                 return _saveConfigCommand;
             }
+        }
+
+        /// <summary>
+        /// 保存配置执行逻辑
+        /// </summary>
+        private void SaveConfig()
+        {
+            try
+            {
+                ProjectConfigHelper.Instance.CurrentConfigs.Cameras = Cameras.ToList();
+                ProjectConfigHelper.Instance.SaveConfig();
+                MessageBox.Show("配置已保存", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"保存配置失败：{ex.Message}", "错误",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        /// <summary>
+        /// 保存命令可用性判断
+        /// </summary>
+        private bool CanSaveConfig()
+        {
+            return Cameras != null;
         }
 
         #endregion

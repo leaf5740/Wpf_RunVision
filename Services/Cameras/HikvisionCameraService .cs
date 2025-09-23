@@ -9,6 +9,12 @@ namespace Wpf_RunVision.Services.Cameras
     public class HikvisionCameraService : ICameraService
     {
         public string Brand => "海康";
+
+        public HikvisionCameraService(string sn)
+        {
+
+        }
+
         public List<string> GetAvailableSNs()
         {
             // TODO: 替换为真实 SDK 获取逻辑

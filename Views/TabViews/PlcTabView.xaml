@@ -26,9 +26,25 @@
             </Border>
         </GroupBox>
         <GroupBox Grid.Column="1" Header="发送信号" Padding="10" Style="{StaticResource GroupBoxTab}">
-            <Border Background="{DynamicResource RegionBrush}" CornerRadius="4">
-                <TextBlock Text="2" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            </Border>
+            <DataGrid Grid.Column="0"
+                  HeadersVisibility="All"
+                  RowHeaderWidth="35"
+                  hc:DataGridAttach.ShowRowNumber="True"
+                  AutoGenerateColumns="False"
+                  CanUserSortColumns="False"
+                  ItemsSource="{Binding Cameras}"
+                  SelectedItem="{Binding SelectedCamera, Mode=TwoWay}"
+                  Style="{StaticResource DataGrid.Small}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Brand}" Header="相机名称" IsReadOnly="True"/>
+                    <DataGridTextColumn Binding="{Binding Sn}" Header="地址"/>
+                    <DataGridTextColumn Binding="{Binding PlcCompleteAddress}" Header="值"/>
+                    <DataGridTextColumn Binding="{Binding Remark}" Header="备注"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+
+
         </GroupBox>
 
         <!-- 右侧PLC配置 -->
@@ -42,24 +58,26 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-
-            <!-- PLC品牌 -->
+            
+            <!-- 通讯协议 -->
             <ComboBox 
                 Grid.Row="0"
+                hc:InfoElement.Title="通讯协议:"
+                ItemsSource="{Binding AvailableProtocols}"
+                SelectedItem="{Binding SelectedProtocol, Mode=TwoWay}"
+                Style="{StaticResource ComboBoxExtend}"
+                Margin="0,0,0,10"/>
+            
+            <!-- PLC品牌 -->
+            <ComboBox 
+                Grid.Row="1"
                 hc:InfoElement.Title="PLC品牌:"
                 ItemsSource="{Binding PlcBrands}"
                 SelectedItem="{Binding SelectedBrand, Mode=TwoWay}"
                 Style="{StaticResource ComboBoxExtend}"
                 Margin="0,0,0,10"/>
 
-            <!-- 协议 -->
-            <ComboBox 
-                Grid.Row="1"
-                hc:InfoElement.Title="通讯协议:"
-                ItemsSource="{Binding AvailableProtocols}"
-                SelectedItem="{Binding SelectedProtocol, Mode=TwoWay}"
-                Style="{StaticResource ComboBoxExtend}"
-                Margin="0,0,0,10"/>
+
 
             <!-- IP -->
             <TextBox 

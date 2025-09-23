@@ -28,12 +28,14 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Brand}" Header="相机名称" IsReadOnly="True"/>
                 <DataGridTextColumn Binding="{Binding Sn}" Header="SN"/>
+                <DataGridTextColumn Binding="{Binding PlcCompleteAddress}" Header="PLC完成信号"/>
                 <DataGridTextColumn Binding="{Binding Remark}" Header="备注"/>
             </DataGrid.Columns>
         </DataGrid>
 
         <Grid Grid.Column="1" Margin="30,15,30,0">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -63,6 +65,16 @@
                       Margin="0,0,0,10"/>
 
             <TextBox Grid.Row="2"
+                     hc:InfoElement.Title="PLC完成信号:"
+                     Text="{Binding PlcCompleteAddress, Mode=TwoWay}"
+                     hc:InfoElement.TitlePlacement="Top"
+                     Style="{StaticResource TextBoxExtend}"
+                     HorizontalAlignment="Stretch"
+                     hc:InfoElement.Placeholder="必填"
+                     ToolTip="必选，相机备注信息"
+                     Margin="0,0,0,10"/>       
+
+            <TextBox Grid.Row="3"
                      hc:InfoElement.Title="相机备注:"
                      Text="{Binding SelectedRemark, Mode=TwoWay}"
                      hc:InfoElement.TitlePlacement="Top"
@@ -72,12 +84,12 @@
                      ToolTip="可选，相机备注信息"
                      Margin="0,0,0,10"/>
 
-            <hc:Divider Grid.Row="3"
+            <hc:Divider Grid.Row="4"
                         LineStrokeThickness="1"
                         Orientation="Horizontal"
                         Margin="0,0,0,10"/>
 
-            <Grid Grid.Row="4" Margin="0,0,0,10">
+            <Grid Grid.Row="5" Margin="0,0,0,10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -106,7 +118,7 @@
                         HorizontalAlignment="Right"/>
             </Grid>
 
-            <Button Grid.Row="5"
+            <Button Grid.Row="6"
                     Height="40"
                     Content="保存配置"
                     Command="{Binding SaveConfigCommand}"

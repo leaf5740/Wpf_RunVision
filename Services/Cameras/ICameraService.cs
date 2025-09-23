@@ -10,6 +10,7 @@ namespace Wpf_RunVision.Services.Cameras
     {
         string Brand { get; }
         List<string> GetAvailableSNs();
+         
     }
 
 }

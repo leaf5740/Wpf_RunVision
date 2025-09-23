@@ -11,7 +11,6 @@ using System.Windows.Input;
 using VM.Core;
 using VMControls.WPF.Release;
 using Wpf_RunVision.Services.Cameras;
-using Wpf_RunVision.Services.Plc;
 using Wpf_RunVision.Utils;
 using Wpf_RunVision.Views;
 
@@ -25,7 +24,6 @@ namespace Wpf_RunVision.ViewModels
     {
         #region 字段
         private readonly string _projectRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Projects");
-        private VisionCore _visionCore;
         private bool _isLoading; // 加载状态（绑定UI进度条）
         private bool _disposed;  // 资源释放标记（IDisposable）
         #endregion
@@ -209,25 +207,7 @@ namespace Wpf_RunVision.ViewModels
         /// </summary>
         private void DisposeVisionCore()
         {
-            if (_visionCore == null) return;
-
-            try
-            {
-                // 释放资源（若VisionCore实现IDisposable）
-                if (_visionCore is IDisposable disposableCore)
-                {
-                    disposableCore.Dispose();
-                    MyLogger.Info("旧方案VisionCore资源已释放");
-                }
-            }
-            catch (Exception ex)
-            {
-                MyLogger.Error("旧方案VisionCore资源释放失败", ex);
-            }
-            finally
-            {
-                _visionCore = null;
-            }
+           
         }
         #endregion
 
@@ -370,15 +350,7 @@ namespace Wpf_RunVision.ViewModels
                     // 加载.sol方案
                     VmSolution.Load(solFile);
 
-                    // 初始化PLC和相机服务
-                    var config = ProjectConfigHelper.Instance.CurrentConfigs;
-                    var plc = PlcFactory.Create("汇川"); // 后续可改为从配置读取品牌
-                    var cameras = config.Cameras
-                        ?.Select(cam => CameraFactory.Create(cam.Brand, cam.Sn))
-                        ?.ToList() ?? new List<ICameraService>();
-
-                    // 初始化VisionCore核心
-                    _visionCore = new VisionCore(cameras, plc);
+                   
 
                     // 更新UI状态
                     CurrentScheme = $"当前方案：{schemeName}";

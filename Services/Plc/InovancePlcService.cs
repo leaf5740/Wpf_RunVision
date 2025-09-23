@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Linq;
 
 namespace Wpf_RunVision.Services.Plc
 {
-    public class InovancePlcService : IPlcService
+    public class InovancePlcService : ModbusTcpBase
     {
-        public string Brand => "汇川";
-
-        public PlcProtocol[] SupportedProtocols => new[] { PlcProtocol.ModbusTCP, PlcProtocol.ModbusRTU };
-
-        public bool Connect(string ip, int port, PlcProtocol protocol)
+        public override bool Write(int address, int value)
         {
-            if (!SupportedProtocols.Contains(protocol))
-                throw new InvalidOperationException("汇川 PLC 只支持 ModbusTCP/RTU 协议");
-
-            Console.WriteLine($"Connecting Inovance PLC at {ip}:{port} with {protocol}");
+            // TODO: 汇川报文格式
+            Console.WriteLine($"[汇川PLC] 写入 地址={address}, 值={value}");
             return true;
         }
 
-        public void Disconnect() { Console.WriteLine("Disconnect Inovance PLC"); }
+        public override int Read(int address)
+        {
+            // TODO: 汇川报文格式
+            Console.WriteLine($"[汇川PLC] 读取 地址={address}");
+            return 1234;
+        }
     }
 }
