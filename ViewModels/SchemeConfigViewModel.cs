@@ -6,7 +6,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Wpf_RunVision.Models;
-using Wpf_RunVision.Services.Cameras;
 using Wpf_RunVision.Utils;
 
 namespace Wpf_RunVision.ViewModels

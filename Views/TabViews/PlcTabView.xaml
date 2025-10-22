@@ -20,25 +20,35 @@
         </Grid.ColumnDefinitions>
 
         <!-- 左侧、右侧占位 -->
-        <GroupBox Grid.Column="0" Header="接收信号" Padding="10" Style="{StaticResource GroupBoxTab}">
-            <Border Background="{DynamicResource RegionBrush}" CornerRadius="4">
-                <TextBlock Text="2" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            </Border>
+        <GroupBox Grid.Column="0" Header="接收信号" Style="{StaticResource GroupBoxTab}">
+            <DataGrid Grid.Column="0"
+                      HeadersVisibility="All"
+                      RowHeaderWidth="35"
+                      hc:DataGridAttach.ShowRowNumber="True"
+                      AutoGenerateColumns="False"
+                      CanUserSortColumns="False"
+                      ItemsSource="{Binding PLCAddressModels1}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Name}" Header="名称" IsReadOnly="True"/>
+                    <DataGridTextColumn Binding="{Binding Addless}" Header="地址"/>
+                    <DataGridTextColumn Binding="{Binding Value}" Header="值"/>
+                    <DataGridTextColumn Binding="{Binding Remark}" Header="备注"/>
+                </DataGrid.Columns>
+            </DataGrid>
         </GroupBox>
-        <GroupBox Grid.Column="1" Header="发送信号" Padding="10" Style="{StaticResource GroupBoxTab}">
+        
+        <GroupBox Grid.Column="1" Header="发送信号"  Style="{StaticResource GroupBoxTab}">
             <DataGrid Grid.Column="0"
                   HeadersVisibility="All"
                   RowHeaderWidth="35"
                   hc:DataGridAttach.ShowRowNumber="True"
                   AutoGenerateColumns="False"
                   CanUserSortColumns="False"
-                  ItemsSource="{Binding Cameras}"
-                  SelectedItem="{Binding SelectedCamera, Mode=TwoWay}"
-                  Style="{StaticResource DataGrid.Small}">
+                  ItemsSource="{Binding PLCAddressModels2}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding Brand}" Header="相机名称" IsReadOnly="True"/>
-                    <DataGridTextColumn Binding="{Binding Sn}" Header="地址"/>
-                    <DataGridTextColumn Binding="{Binding PlcCompleteAddress}" Header="值"/>
+                    <DataGridTextColumn Binding="{Binding Name}" Header="名称" IsReadOnly="True"/>
+                    <DataGridTextColumn Binding="{Binding Addless}" Header="地址"/>
+                    <DataGridTextColumn Binding="{Binding Value}" Header="值"/>
                     <DataGridTextColumn Binding="{Binding Remark}" Header="备注"/>
                 </DataGrid.Columns>
             </DataGrid>

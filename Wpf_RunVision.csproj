@@ -41,6 +41,12 @@
     <StartupObject>Wpf_RunVision.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Basler.Pylon">
+      <HintPath>C:\Users\PC\Desktop\Basler.Pylon.dll</HintPath>
+    </Reference>
+    <Reference Include="CamCtrl">
+      <HintPath>C:\Users\PC\Desktop\CamCtrl.dll</HintPath>
+    </Reference>
     <Reference Include="CommunityToolkit.Mvvm, Version=8.4.0.0, Culture=neutral, PublicKeyToken=4aff67a105548ee2, processorArchitecture=MSIL">
       <HintPath>packages\CommunityToolkit.Mvvm.8.4.0\lib\netstandard2.0\CommunityToolkit.Mvvm.dll</HintPath>
     </Reference>
@@ -48,6 +54,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Program Files\VisionMaster4.3.0\Development\V4.x\ComControls\Assembly\FrontendUI.WPF.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="GxIAPINET">
+      <HintPath>C:\Users\PC\Desktop\GxIAPINET.dll</HintPath>
     </Reference>
     <Reference Include="HandyControl, Version=3.5.1.0, Culture=neutral, PublicKeyToken=45be8712787a1e5b, processorArchitecture=MSIL">
       <HintPath>packages\HandyControl.3.5.1\lib\net472\HandyControl.dll</HintPath>
@@ -150,12 +159,26 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\CameraModels.cs" />
+    <Compile Include="Models\PLCAddressModels.cs" />
     <Compile Include="Models\PlcModels.cs" />
     <Compile Include="Models\ProjectConfigs.cs" />
-    <Compile Include="Services\Cameras\CameraFactory.cs" />
-    <Compile Include="Services\Cameras\DahengCameraService .cs" />
-    <Compile Include="Services\Cameras\HikvisionCameraService .cs" />
-    <Compile Include="Services\Cameras\ICameraService.cs" />
+    <Compile Include="Services\Cameras\cameralibs\DHCamera\CFps.cs" />
+    <Compile Include="Services\Cameras\cameralibs\DHCamera\CStatistics.cs" />
+    <Compile Include="Services\Cameras\cameralibs\DHCamera\CStopWatch.cs" />
+    <Compile Include="Services\Cameras\cameralibs\DHCamera\DHCamera.cs" />
+    <Compile Include="Services\Cameras\cameralibs\DHCamera\GxBitmap.cs" />
+    <Compile Include="Services\Cameras\cameralibs\DHCamera\Util_Bitmap.cs" />
+    <Compile Include="Services\Cameras\cameralibs\DHCamera\Win32Bitmap.cs" />
+    <Compile Include="Services\Cameras\cameralibs\HKCamera\MVCameraCtrl.cs" />
+    <Compile Include="Services\Cameras\CamFactory.cs" />
+    <Compile Include="Services\Cameras\common\CamConfig.cs" />
+    <Compile Include="Services\Cameras\common\ComEnum.cs" />
+    <Compile Include="Services\Cameras\ICamera.cs" />
+    <Compile Include="Services\Cameras\mode\BaseCamera.cs" />
+    <Compile Include="Services\Cameras\mode\BaslerCamera.cs" />
+    <Compile Include="Services\Cameras\mode\DaHengCamera.cs" />
+    <Compile Include="Services\Cameras\mode\HIKCamera.cs" />
+    <Compile Include="Services\Core\VisionCoreService.cs" />
     <Compile Include="Services\Plc\InovancePlcService.cs" />
     <Compile Include="Services\Plc\IPlcService.cs" />
     <Compile Include="Services\Plc\MitsubishiPlcService.cs" />
@@ -281,7 +304,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Core\" />
     <Folder Include="Resources\" />
     <Folder Include="Services\MySql\" />
   </ItemGroup>

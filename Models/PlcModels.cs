@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.Generic;
 
 namespace Wpf_RunVision.Models
 {
@@ -32,5 +33,9 @@ namespace Wpf_RunVision.Models
             get => _port;
             set => SetProperty(ref _port, value);
         }
+
+        public List<PLCAddressModels> PLCAddressModels1 { get; set; } = new List<PLCAddressModels>();
+
+        public List<PLCAddressModels> PLCAddressModels2 { get; set; } = new List<PLCAddressModels>();
     }
 }

@@ -1,5 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using HandyControl.Tools;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,25 +11,16 @@ using System.Windows;
 using System.Windows.Input;
 using VM.Core;
 using VMControls.WPF.Release;
-using Wpf_RunVision.Services.Cameras;
+using Wpf_RunVision.Services;
 using Wpf_RunVision.Utils;
 using Wpf_RunVision.Views;
 
 namespace Wpf_RunVision.ViewModels
 {
-    /// <summary>
-    /// 主窗口ViewModel
-    /// 负责方案管理、权限控制、核心服务初始化等核心逻辑
-    /// </summary>
-    public class MainViewModel : ObservableObject, IDisposable
+    public class MainViewModel : ObservableObject
     {
-        #region 字段
         private readonly string _projectRoot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Projects");
-        private bool _isLoading; // 加载状态（绑定UI进度条）
-        private bool _disposed;  // 资源释放标记（IDisposable）
-        #endregion
 
-        #region 属性
         /// <summary>
         /// 存储方案名与对应文件夹路径的映射
         /// </summary>
@@ -38,6 +30,8 @@ namespace Wpf_RunVision.ViewModels
         /// 菜单绑定的方案集合（含"无方案"占位）
         /// </summary>
         public ObservableCollection<string> Schemes { get; } = new ObservableCollection<string>();
+
+        private VisionCoreService visionCoreService;
 
         /// <summary>
         /// 当前用户权限（显示在界面）
@@ -79,30 +73,18 @@ namespace Wpf_RunVision.ViewModels
             set => SetProperty(ref _canEditScheme, value);
         }
 
-        /// <summary>
-        /// 加载状态（控制UI进度条显示）
-        /// </summary>
-        public bool IsLoading
-        {
-            get => _isLoading;
-            set => SetProperty(ref _isLoading, value);
-        }
 
         /// <summary>
         /// 特殊标记：无方案占位符
         /// </summary>
         private const string NoSchemePlaceholder = "无方案";
-        #endregion
 
-        #region 构造函数
         public MainViewModel()
         {
             // 异步加载方案列表（避免阻塞UI线程）
             _ = LoadSchemesAsync();
         }
-        #endregion
 
-        #region 核心方法：方案加载与资源管理
         /// <summary>
         /// 异步加载Projects文件夹下的有效方案
         /// 有效方案定义：包含*.sol文件的文件夹
@@ -202,17 +184,6 @@ namespace Wpf_RunVision.ViewModels
         }
 
         /// <summary>
-        /// 释放VisionCore资源（相机、PLC等）
-        /// 切换方案/程序关闭时调用
-        /// </summary>
-        private void DisposeVisionCore()
-        {
-           
-        }
-        #endregion
-
-        #region 命令：UI交互逻辑
-        /// <summary>
         /// 打开方案配置窗口
         /// </summary>
         public ICommand OpenSchemeCommand => new RelayCommand(() =>
@@ -236,7 +207,7 @@ namespace Wpf_RunVision.ViewModels
         });
 
         /// <summary>
-        /// 切换用户权限（员工 ↔ 工程师）
+        /// 切换用户权限
         /// </summary>
         public ICommand TogglePermissionCommand => new RelayCommand(() =>
         {
@@ -300,7 +271,6 @@ namespace Wpf_RunVision.ViewModels
                 return;
             }
 
-            IsLoading = true; // 显示加载进度条
             try
             {
                 string solFile = null;
@@ -309,9 +279,6 @@ namespace Wpf_RunVision.ViewModels
                 // 阶段1：后台线程执行耗时操作（释放旧资源、加载配置）
                 await Task.Run(() =>
                 {
-                    // 释放旧方案资源
-                    DisposeVisionCore();
-
                     // 获取方案文件夹路径
                     if (!SchemeFolders.TryGetValue(schemeName, out schemeFolder))
                     {
@@ -350,11 +317,12 @@ namespace Wpf_RunVision.ViewModels
                     // 加载.sol方案
                     VmSolution.Load(solFile);
 
-                   
-
                     // 更新UI状态
                     CurrentScheme = $"当前方案：{schemeName}";
                     MyLogger.Info($"方案[{schemeName}]加载完成");
+                     visionCoreService = new VisionCoreService(ProjectConfigHelper.Instance.CurrentConfigs.Cameras);
+
+
                 });
             }
             catch (Exception ex)
@@ -364,10 +332,7 @@ namespace Wpf_RunVision.ViewModels
                 MyLogger.Error($"方案[{schemeName}]加载失败", ex);
                 MessageBox.Show($"方案加载失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            finally
-            {
-                IsLoading = false; // 隐藏加载进度条
-            }
+
         });
 
         /// <summary>
@@ -375,38 +340,8 @@ namespace Wpf_RunVision.ViewModels
         /// </summary>
         public ICommand WindowClosedCommand => new RelayCommand(() =>
         {
-            Dispose(); // 释放所有资源
+            visionCoreService.DestroyAllCameras();
             MyLogger.Info("程序正常关闭，所有资源已释放");
         });
-        #endregion
-
-        #region IDisposable：资源释放实现
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed) return;
-
-            // 释放托管资源（仅在手动Dispose时执行）
-            if (disposing)
-            {
-                DisposeVisionCore(); // 释放VisionCore（相机、PLC）
-            }
-
-            _disposed = true;
-        }
-
-        /// <summary>
-        /// 析构函数：防止忘记手动Dispose时的资源泄漏
-        /// </summary>
-        ~MainViewModel()
-        {
-            Dispose(false);
-        }
-        #endregion
     }
 }

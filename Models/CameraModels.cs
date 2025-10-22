@@ -9,7 +9,6 @@ namespace Wpf_RunVision.Models{
     {
         private string _brand;
         private string _sn;
-        private string _plcCompleteAddress;
         private string _remark;
 
         /// <summary>
@@ -28,15 +27,6 @@ namespace Wpf_RunVision.Models{
         {
             get => _sn;
             set => SetProperty(ref _sn, value);
-        }
-
-        /// <summary>
-        /// PLC完成信号地址（格式示例：DB1.0）
-        /// </summary>
-        public string PlcCompleteAddress
-        {
-            get => _plcCompleteAddress;
-            set => SetProperty(ref _plcCompleteAddress, value);
         }
 
         /// <summary>

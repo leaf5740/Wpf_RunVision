@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using NLog;
 using System;
 using System.Collections.Generic;
@@ -200,6 +200,27 @@ namespace Wpf_RunVision.Utils
         public static void Warn(string message) => Instance.LogInternal(Level.Warn, message, null);
         public static void Error(string message) => Instance.LogInternal(Level.Error, message, null);
         public static void Error(string message, Exception ex) => Instance.LogInternal(Level.Error, message, ex);
+        
+        // 新增：带格式参数的日志方法
+        public static void InfoFormat(string format, params object[] args) => Instance.LogInternal(Level.Info, string.Format(format, args), null);
+        public static void DebugFormat(string format, params object[] args) => Instance.LogInternal(Level.Debug, string.Format(format, args), null);
+        public static void WarnFormat(string format, params object[] args) => Instance.LogInternal(Level.Warn, string.Format(format, args), null);
+        public static void ErrorFormat(string format, params object[] args) => Instance.LogInternal(Level.Error, string.Format(format, args), null);
+        public static void ErrorFormat(Exception ex, string format, params object[] args) => Instance.LogInternal(Level.Error, string.Format(format, args), ex);
+        
+        // 新增：性能日志方法
+        public static void Performance(string operation, TimeSpan elapsed) => 
+            Instance.LogInternal(Level.Debug, $"[性能] {operation} 耗时: {elapsed.TotalMilliseconds:F2} ms", null);
+        
+        // 新增：操作日志方法
+        public static void Operation(string user, string action, string target = null, bool success = true)
+        {
+            string message = success 
+                ? $"[操作] 用户 {user} 执行 {action}" + (string.IsNullOrEmpty(target) ? "" : $" 于 {target}")
+                : $"[操作] 用户 {user} 执行 {action}" + (string.IsNullOrEmpty(target) ? "" : $" 于 {target}") + " 失败";
+            
+            Instance.LogInternal(success ? Level.Info : Level.Warn, message, null);
+        }
 
         /// <summary>
         /// 内部记录日志
@@ -309,8 +330,6 @@ namespace Wpf_RunVision.Utils
             }
         }
 
-        /// <summary>
-        /// 判断该日志等级是否
         /// <summary>
         /// 判断该日志等级是否需要显示
         /// </summary>
