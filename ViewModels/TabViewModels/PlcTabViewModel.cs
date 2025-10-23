@@ -21,8 +21,8 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
         private  PlcModels _plcConfig = new PlcModels(); // 显式指定类型，避免目标类型推断
         private IPlcService _plcService;
 
-        public ObservableCollection<PLCAddressModels> PLCAddressModels1 { get; private set; } = new ObservableCollection<PLCAddressModels>();
-        public ObservableCollection<PLCAddressModels> PLCAddressModels2 { get; private set; } = new ObservableCollection<PLCAddressModels>();
+        public ObservableCollection<PLCAddressModels> ReadPLCAddress { get; private set; } = new ObservableCollection<PLCAddressModels>();
+        public ObservableCollection<PLCAddressModels> WritePLCAddress { get; private set; } = new ObservableCollection<PLCAddressModels>();
 
         // 公共属性
         public ObservableCollection<string> AvailableProtocols => _availableProtocols;
@@ -79,7 +79,7 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
             var sendSignals = new List<string> { "进板信号", "心跳信号", "复位完成信号" };
             foreach (var name in sendSignals)
             {
-                PLCAddressModels1.Add(new PLCAddressModels // 显式指定类型，不依赖目标类型推断
+                ReadPLCAddress.Add(new PLCAddressModels // 显式指定类型，不依赖目标类型推断
                 {
                     Name = name,
                     Address = "null", // 保持与模型类一致的属性名
@@ -96,7 +96,7 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
             };
             foreach (var name in receiveSignals)
             {
-                PLCAddressModels2.Add(new PLCAddressModels // 显式指定类型
+                WritePLCAddress.Add(new PLCAddressModels // 显式指定类型
                 {
                     Name = name,
                     Address = "null", // 保持与模型类一致的属性名
@@ -126,23 +126,23 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
                 PlcConfig.Protocol = config.Protocol;
                 PlcConfig.Brand = config.Brand;
 
-                // 加载发送信号地址（替换默认值）
-                if (config.PLCAddressModels1 != null && config.PLCAddressModels1.Any())
+                // 读地址（替换默认值）
+                if (config.ReadPLCAddress != null && config.ReadPLCAddress.Any())
                 {
-                    PLCAddressModels1.Clear();
-                    foreach (var item in config.PLCAddressModels1)
+                    ReadPLCAddress.Clear();
+                    foreach (var item in config.ReadPLCAddress)
                     {
-                        PLCAddressModels1.Add(item);
+                        ReadPLCAddress.Add(item);
                     }
                 }
 
-                // 加载接收信号地址（替换默认值）
-                if (config.PLCAddressModels2 != null && config.PLCAddressModels2.Any())
+                // 写地址（替换默认值）
+                if (config.WritePLCAddress != null && config.WritePLCAddress.Any())
                 {
-                    PLCAddressModels2.Clear();
-                    foreach (var item in config.PLCAddressModels2)
+                    WritePLCAddress.Clear();
+                    foreach (var item in config.WritePLCAddress)
                     {
-                        PLCAddressModels2.Add(item);
+                        WritePLCAddress.Add(item);
                     }
                 }
             }
@@ -231,8 +231,8 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
                     Port = PlcConfig.Port,
                     Protocol = SelectedProtocol,
                     Brand = SelectedBrand,
-                    PLCAddressModels1 = PLCAddressModels1.ToList(),
-                    PLCAddressModels2 = PLCAddressModels2.ToList()
+                    ReadPLCAddress = ReadPLCAddress.ToList(),
+                    WritePLCAddress = WritePLCAddress.ToList()
                 };
 
                 configHelper.SaveConfig();

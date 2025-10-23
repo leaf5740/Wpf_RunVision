@@ -1,58 +1,71 @@
 ﻿using MG.CamCtrl;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
+using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using Wpf_RunVision.Models;
+using Wpf_RunVision.Services.Plc;
 using Wpf_RunVision.Utils;
 
 namespace Wpf_RunVision.Services
 {
     /// <summary>
-    /// 视觉核心服务：管理多相机初始化、拍照与PLC交互（兼容.NET 4.7.1）
+    /// 核心视觉服务类
+    /// 1️⃣ 管理多相机初始化/释放
+    /// 2️⃣ 支持顺序拍照（软触发）
+    /// 3️⃣ 支持硬触发模式采图，触发回调入队
+    /// 4️⃣ 支持生产者-消费者模式处理拍摄的图片队列
     /// </summary>
     public class VisionCoreService
     {
+        #region 字段
+
+        // 多相机实例列表
         private readonly List<CameraInstance> _cameraInstances = new List<CameraInstance>();
 
-        /// <summary>
-        /// 相机实例封装：关联配置与SDK实例
-        /// </summary>
-        private class CameraInstance
-        {
-            public CameraModels Config { get; set; }
-            public ICamera SdkInstance { get; set; }
-        }
+        // PLC服务接口
+        private readonly IPlcService _plcService;
+
+        // 拍摄完成的图片队列（线程安全）
+        private readonly ConcurrentQueue<Bitmap> _imageQueue = new ConcurrentQueue<Bitmap>();
+
+        // 硬触发取消令牌
+        private CancellationTokenSource _hardTriggerCts;
+
+        
+        #endregion
+
+        #region 构造函数
 
         /// <summary>
-        /// 构造函数：初始化所有配置的相机
+        /// 初始化核心视觉服务
         /// </summary>
-        public VisionCoreService(List<CameraModels> cameraModels)
+        /// <param name="projectConfigs">项目配置，包括相机列表和PLC配置</param>
+        public VisionCoreService(ProjectConfigs projectConfigs)
         {
-            if (cameraModels == null || !cameraModels.Any())
+           
+            if (projectConfigs.Cameras == null || projectConfigs.Cameras.Count == 0)
             {
-                MessageBox.Show("相机配置列表为空，无法初始化", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MyLogger.Error("相机配置列表为空，无法初始化！");
                 return;
             }
 
-            foreach (var item in cameraModels)
+            // 初始化相机
+            foreach (var item in projectConfigs.Cameras)
             {
                 try
                 {
                     CameraBrand brand;
                     switch (item.Brand)
                     {
-                        case "海康相机":
-                            brand = CameraBrand.HIK;
-                            break;
-                        case "大恒相机":
-                            brand = CameraBrand.DaHeng;
-                            break;
-                        default:
-                            throw new NotSupportedException($"不支持的相机品牌：{item.Brand}");
+                        case "海康相机": brand = CameraBrand.HIK; break;
+                        case "大恒相机": brand = CameraBrand.DaHeng; break;
+                        default: throw new NotSupportedException($"不支持的相机品牌：{item.Brand}");
                     }
 
-                    // 创建并初始化相机
                     ICamera camera = CamFactory.CreatCamera(brand);
                     bool initResult = camera.InitDevice(item.Sn);
                     MyLogger.Info($"相机[{item.Sn}]初始化结果：{initResult}");
@@ -61,15 +74,17 @@ namespace Wpf_RunVision.Services
                     {
                         _cameraInstances.Add(new CameraInstance
                         {
-                            Config = item,
+                            CameraSN = item.Sn,
+                            CameraBrand = item.Brand,
+                            PlcAddress = item.PlcAddress,
                             SdkInstance = camera
                         });
                     }
                     else
                     {
-                        MyLogger.Error($"相机[{item.Sn}]初始化失败");
                         camera.CloseDevice();
                         CamFactory.DestroyCamera(camera);
+                        MyLogger.Error($"相机[{item.Sn}]初始化失败");
                     }
                 }
                 catch (Exception ex)
@@ -78,7 +93,22 @@ namespace Wpf_RunVision.Services
                     MessageBox.Show($"相机[{item.Sn}]初始化失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+
+            // 初始化PLC
+            try
+            {
+                _plcService = PlcFactory.Create(projectConfigs.PlcConfig.Brand);
+            }
+            catch (Exception ex)
+            {
+                MyLogger.Error($"PLC 初始化失败：{ex.Message}");
+                MessageBox.Show($"PLC 初始化失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+
+        #endregion
+
+        #region 资源释放
 
         /// <summary>
         /// 释放所有相机资源
@@ -87,10 +117,124 @@ namespace Wpf_RunVision.Services
         {
             foreach (var instance in _cameraInstances)
             {
-                instance.SdkInstance?.CloseDevice();
-                CamFactory.DestroyCamera(instance.SdkInstance);
+                try
+                {
+                    instance.SdkInstance?.CloseDevice();
+                    CamFactory.DestroyCamera(instance.SdkInstance);
+                }
+                catch (Exception ex)
+                {
+                    MyLogger.Error($"释放相机[{instance.CameraSN}]异常：{ex.Message}");
+                }
             }
             _cameraInstances.Clear();
         }
+
+        #endregion
+
+        #region 硬触发模式
+
+        /// <summary>
+        /// 启动所有相机硬触发
+        /// 相机每次触发拍照，回调入队
+        /// </summary>
+        public void StartHardTriggerAll()
+        {
+            if (_hardTriggerCts != null)
+                return; // 已经启动
+
+            _hardTriggerCts = new CancellationTokenSource();
+
+            foreach (var cameraInstance in _cameraInstances)
+            {
+                try
+                {
+                    cameraInstance.SdkInstance.StartWith_HardTriggerModel(TriggerSource.Line0, (bitmap) =>
+                    {
+                        if (_hardTriggerCts.IsCancellationRequested)
+                            return;
+
+                        if (bitmap == null)
+                        {
+                            MyLogger.Error($"硬触发相机[{cameraInstance.CameraSN}]采图失败");
+                            return;
+                        }
+
+                        // 入队
+                        _imageQueue.Enqueue(bitmap);
+
+                        //写PLC完成信号
+                        if (!string.IsNullOrWhiteSpace(cameraInstance.PlcAddress))
+                        {
+                            //_plcService.WriteValue(cameraInstance.PlcAddress, true);
+                            MyLogger.Info($"PLC完成信号写入：{cameraInstance.PlcAddress}");
+                        }
+                    });
+
+                    MyLogger.Info($"相机[{cameraInstance.CameraSN}]已启动硬触发(Line0)");
+                }
+                catch (Exception ex)
+                {
+                    MyLogger.Error($"相机[{cameraInstance.CameraSN}]启动硬触发异常：{ex.Message}");
+                }
+            }
+        }
+
+        #endregion
+
+        #region 消费者线程
+
+        /// <summary>
+        /// 启动后台消费者处理图片队列
+        /// </summary>
+        /// <param name="processImageAction">处理图片的委托方法</param>
+        /// <param name="cancellationToken">取消令牌</param>
+        public void StartConsumer(Action<Bitmap> processImageAction, CancellationToken cancellationToken = default)
+        {
+            Task.Run(() =>
+            {
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    if (_imageQueue.TryDequeue(out var item))
+                    {
+                        try
+                        {
+                            processImageAction?.Invoke(item);
+                            
+                        }
+                        catch (Exception ex)
+                        {
+                            MyLogger.Error($"图片处理异常：{ex.Message}");
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            Task.Delay(10, cancellationToken).Wait();
+                        }
+                        catch { } // 捕获取消异常
+                    }
+                }
+            }, cancellationToken);
+        }
+
+        #endregion
+
+        #region 内部类
+
+        /// <summary>
+        /// 相机实例封装类
+        /// 包含相机SN、品牌、PLC地址和SDK实例
+        /// </summary>
+        private class CameraInstance
+        {
+            public string CameraSN { get; set; }
+            public string CameraBrand { get; set; }
+            public string PlcAddress { get; set; }
+            public ICamera SdkInstance { get; set; }
+        }
+
+        #endregion
     }
 }

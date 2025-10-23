@@ -3,39 +3,25 @@ using System.Collections.Generic;
 
 namespace Wpf_RunVision.Models
 {
-    public class PlcModels : ObservableObject
+    public class PlcModels
     {
-        private string _brand;
-        private string _protocol;
-        private string _ip;
-        private string _port;
+        public string Brand { set; get;}
+        public string Protocol { set; get; }
+        public string Ip { set; get; }
+        public string Port { set; get; }
 
-        public string Protocol
-        {
-            get => _protocol;
-            set => SetProperty(ref _protocol, value);
-        }
+        public List<PLCAddressModels> ReadPLCAddress { get; set; } = new List<PLCAddressModels>();
 
-        public string Brand
-        {
-            get => _brand;
-            set => SetProperty(ref _brand, value);
-        }
-
-        public string Ip
-        {
-            get => _ip;
-            set => SetProperty(ref _ip, value);
-        }
-
-        public string Port
-        {
-            get => _port;
-            set => SetProperty(ref _port, value);
-        }
-
-        public List<PLCAddressModels> PLCAddressModels1 { get; set; } = new List<PLCAddressModels>();
-
-        public List<PLCAddressModels> PLCAddressModels2 { get; set; } = new List<PLCAddressModels>();
+        public List<PLCAddressModels> WritePLCAddress { get; set; } = new List<PLCAddressModels>();
     }
+
+    public class PLCAddressModels
+    {
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string Value { get; set; }
+        public string Remark { get; set; }
+
+    }
+
 }

@@ -24,6 +24,7 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
         private CameraModels _selectedCamera;
         private string _selectedBrand; // 初始为null，默认不选中品牌
         private string _selectedSN;
+        private string _selectedPlcAddress;
         private string _selectedRemark;
 
         // 命令字段
@@ -95,6 +96,12 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
                     AddCameraCommand?.NotifyCanExecuteChanged();
                 }
             }
+        }
+
+        public string SelectedPlcAddress
+        {
+            get => _selectedPlcAddress;
+            set => SetProperty(ref _selectedPlcAddress, value);
         }
 
         /// <summary>
@@ -176,12 +183,14 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
                 // 选中相机时自动填充品牌（触发SN枚举）
                 SelectedBrand = SelectedCamera.Brand;
                 SelectedSN = SelectedCamera.Sn;
+                SelectedPlcAddress = SelectedCamera.PlcAddress;
                 SelectedRemark = SelectedCamera.Remark;
             }
             else
             {
                 // 未选中相机时清空表单（品牌保持当前选中状态，不强制清空）
                 SelectedSN = string.Empty;
+                SelectedPlcAddress = string.Empty;
                 SelectedRemark = string.Empty;
             }
         }
@@ -249,9 +258,20 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
         /// </summary>
         private void AddCamera()
         {
+            if (string.IsNullOrEmpty(SelectedPlcAddress))
+            {
+                MessageBox.Show($"相机完成信号不能为空！", "提示");
+                return;
+            }
             if (_cameras.Any(c => c.Sn == SelectedSN))
             {
                 MessageBox.Show($"SN为{SelectedSN}的相机已存在！", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (_cameras.Any(c => c.PlcAddress == SelectedPlcAddress))
+            {
+                MessageBox.Show($"相机完成信号为{SelectedPlcAddress}的地址已存在！", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -259,6 +279,7 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
             {
                 Brand = SelectedBrand,
                 Sn = SelectedSN,
+                PlcAddress = SelectedPlcAddress,
                 Remark = string.IsNullOrWhiteSpace(SelectedRemark) ? $"{SelectedBrand}相机" : SelectedRemark
             };
             _cameras.Add(newCamera);

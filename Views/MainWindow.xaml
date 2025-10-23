@@ -84,13 +84,86 @@
                     <Border Grid.Row="0" Margin="0,2,0,2"
                             BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
                             Background="{DynamicResource RegionBrush}"
-                            CornerRadius="4"/>
+                            CornerRadius="4">
 
-                    <Border Grid.Row="1" Margin="0,0,0,2"
+                    <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2.5*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                        
+                            
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0" Grid.ColumnSpan="2" Style="{StaticResource BorderRegion}" Margin="5" Padding="5,5,5,5">
+                                    <StackPanel  Orientation="Vertical"  HorizontalAlignment="Left" >
+                                        <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="蚀刻码:0000000000000000000000000000" Style="{StaticResource TextBlockLargeBold}" FontSize="12" Margin="5,5,0,0"/>
+                                        <TextBlock  VerticalAlignment="Top" HorizontalAlignment="Left" Text="纸质码:FEGIWEUC" Style="{StaticResource TextBlockLargeBold}" FontSize="12" Margin="5,5,0,0"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Style="{StaticResource BorderRegion}" Margin="5,0,5,5" Padding="5,5,5,5">
+                                        <StackPanel  Orientation="Vertical"  HorizontalAlignment="Left" >
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Grid.Column="1" Style="{StaticResource BorderRegion}" Margin="0,0,5,5" Padding="5,5,5,5">
+                                        <StackPanel  Orientation="Vertical"  HorizontalAlignment="Left" >
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Grid.Column="2" Style="{StaticResource BorderRegion}" Margin="0,0,5,5" Padding="5,5,5,5">
+                                        <StackPanel  Orientation="Vertical"  VerticalAlignment="Top" HorizontalAlignment="Left" >
+                                            <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="数据库：连接成功" Style="{StaticResource TextBlockDefaultSuccess}" FontSize="14" Margin="5,5,0,0"/>
+                                            <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="PLC：连接成功" Style="{StaticResource TextBlockDefaultSuccess}" FontSize="14" Margin="5,5,0,0"/>
+                                            <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="MES：Null" Style="{StaticResource TextBlockDefaultDanger}" FontSize="14" Margin="5,5,0,0"/>
+                                            <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="存图网盘：连接成功" Style="{StaticResource TextBlockDefaultSuccess}" FontSize="14" Margin="5,5,0,0"/>
+
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                            </Grid>
+
+                            <Grid Grid.Row="0" Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Border Grid.Row="0"  Style="{StaticResource BorderRegion}" Margin="0,5,5,5" Padding="5,5,5,5">
+                                    <StackPanel  Orientation="Vertical">
+                                        <hc:CircleProgressBar  Value="{Binding Value,ElementName=SliderDemo}" Margin="5" Width="100" Height="96" ArcThickness="20" Style="{StaticResource ProgressBarSuccessCircle}"/>
+                                        <Slider Value="50" Name="SliderDemo" Maximum="100"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" Style="{StaticResource BorderRegion}" Margin="0,0,5,5" Padding="5,5,5,5">
+                                    <StackPanel  Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                        <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="总运行时常：01天02时30秒" Style="{StaticResource TextBlockLarge}" FontSize="12" Margin="5,5,0,0"/>
+                                        <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="CT总耗时：16秒" Style="{StaticResource TextBlockLarge}" FontSize="12" Margin="5,5,0,0"/>
+                                        <TextBlock  VerticalAlignment="Top" HorizontalAlignment="Left" Text="单次流程耗时：3秒" Style="{StaticResource TextBlockLarge}" FontSize="12" Margin="5,5,0,0"/>
+                                    </StackPanel>
+                                </Border>
+
+                            </Grid>
+                        
+                        </Grid>
+                        
+                    </Border>
+
+                    <Border Grid.Row="1" Margin="0,3,0,2"
                             BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
                             Background="{DynamicResource RegionBrush}"
                             CornerRadius="4">
-                    <RichTextBox x:Name="LogRichTextBox"
+                        <RichTextBox x:Name="LogRichTextBox"
                                      BorderThickness="0"
                                      IsReadOnly="True"
                                      VerticalScrollBarVisibility="Auto"/>

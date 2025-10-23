@@ -27,7 +27,7 @@ namespace Wpf_RunVision
             if (!isNewInstance)
             {
                 // 弹窗提示用户
-                MessageBox.Show("软件已经在运行中！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("软件已经在运行中！请勿重复开启", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 // 激活已存在实例的主窗口
                 ActivateExistingInstance();

@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Input;
 using VM.Core;
 using VMControls.WPF.Release;
+using Wpf_RunVision.Models;
 using Wpf_RunVision.Services;
 using Wpf_RunVision.Utils;
 using Wpf_RunVision.Views;
@@ -30,6 +31,8 @@ namespace Wpf_RunVision.ViewModels
         /// 菜单绑定的方案集合（含"无方案"占位）
         /// </summary>
         public ObservableCollection<string> Schemes { get; } = new ObservableCollection<string>();
+
+        
 
         private VisionCoreService visionCoreService;
 
@@ -213,14 +216,12 @@ namespace Wpf_RunVision.ViewModels
         {
             try
             {
-                // 从工程师切换到员工：直接切换
                 if (CurrentPermission == "当前权限：工程师")
                 {
                     CurrentPermission = "当前权限：员工";
                     CanEditScheme = false;
                     MyLogger.Info("用户权限切换为：员工");
                 }
-                // 从员工切换到工程师：验证密码
                 else
                 {
                     var mainWindow = Application.Current.MainWindow;
@@ -320,7 +321,7 @@ namespace Wpf_RunVision.ViewModels
                     // 更新UI状态
                     CurrentScheme = $"当前方案：{schemeName}";
                     MyLogger.Info($"方案[{schemeName}]加载完成");
-                     visionCoreService = new VisionCoreService(ProjectConfigHelper.Instance.CurrentConfigs.Cameras);
+                    visionCoreService = new VisionCoreService(ProjectConfigHelper.Instance.CurrentConfigs);
 
 
                 });
@@ -340,7 +341,10 @@ namespace Wpf_RunVision.ViewModels
         /// </summary>
         public ICommand WindowClosedCommand => new RelayCommand(() =>
         {
-            visionCoreService.DestroyAllCameras();
+            if (visionCoreService != null)
+            {
+                visionCoreService.DestroyAllCameras();
+            }
             MyLogger.Info("程序正常关闭，所有资源已释放");
         });
     }
