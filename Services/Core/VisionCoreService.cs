@@ -32,7 +32,7 @@ namespace Wpf_RunVision.Services
         // 拍摄完成的图片队列（线程安全）
         private readonly ConcurrentQueue<Bitmap> _imageQueue = new ConcurrentQueue<Bitmap>();
 
-        // 硬触发取消令牌
+        // 生产者取消令牌
         private CancellationTokenSource _hardTriggerCts;
 
         
@@ -132,7 +132,7 @@ namespace Wpf_RunVision.Services
 
         #endregion
 
-        #region 硬触发模式
+        #region 硬触发模式 生产者线程
 
         /// <summary>
         /// 启动所有相机硬触发

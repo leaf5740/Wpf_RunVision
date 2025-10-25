@@ -1,18 +1,28 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 
 namespace Wpf_RunVision.Models
 {
     /// <summary>
-    /// 主界面绑定状态类，用于存放 UI 实时显示的数据
+    /// 主界面绑定状态类（单例模式）
+    /// 用于存放 UI 实时显示的数据，例如：
+    /// 蚀刻码、纸质码、数据库/PLC/MES/NAS 状态、进度条、运行时长等。
     /// </summary>
-    public class MainViewState : ObservableObject
+    public sealed class MainViewState : ObservableObject
     {
+        #region 单例实现
+        private static readonly MainViewState _instance = new MainViewState();
+        public static MainViewState Instance => _instance;
+
+        private MainViewState() { }
+        #endregion
+
         private string _etchingCode;
         private string _paperCode;
-        private string _dbStatus;
-        private string _plcStatus;
-        private string _mesStatus;
-        private string _nasStatus;
+        private bool _dbStatus;
+        private bool _plcStatus;
+        private bool _mesStatus;
+        private bool _nasStatus;
         private double _progressValue;
         private string _runTime;
         private string _ctTime;
@@ -30,25 +40,25 @@ namespace Wpf_RunVision.Models
             set => SetProperty(ref _paperCode, value);
         }
 
-        public string DbStatus
+        public bool DbStatus
         {
             get => _dbStatus;
             set => SetProperty(ref _dbStatus, value);
         }
 
-        public string PlcStatus
+        public bool PlcStatus
         {
             get => _plcStatus;
             set => SetProperty(ref _plcStatus, value);
         }
 
-        public string MesStatus
+        public bool MesStatus
         {
             get => _mesStatus;
             set => SetProperty(ref _mesStatus, value);
         }
 
-        public string NasStatus
+        public bool NasStatus
         {
             get => _nasStatus;
             set => SetProperty(ref _nasStatus, value);

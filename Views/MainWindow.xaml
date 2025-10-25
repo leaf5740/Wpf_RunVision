@@ -31,6 +31,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- 菜单栏 -->
         <Menu Grid.Row="0">
             <MenuItem Header="软件设置" IsEnabled="{Binding CanEditScheme}">
                 <MenuItem Style="{x:Null}" Header="方案配置" Command="{Binding OpenSchemeCommand}"/>
@@ -46,14 +47,14 @@
                     <Style TargetType="MenuItem">
                         <Setter Property="Header" Value="{Binding}" />
                         <Setter Property="Command" 
-                    Value="{Binding DataContext.SwitchSchemeCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                Value="{Binding DataContext.SwitchSchemeCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
                         <Setter Property="CommandParameter" Value="{Binding}" />
                     </Style>
                 </MenuItem.ItemContainerStyle>
             </MenuItem>
-
         </Menu>
 
+        <!-- 主内容区 -->
         <Grid Grid.Row="1" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
@@ -61,10 +62,12 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
+            <!-- 左侧主界面显示区域 -->
             <Border Grid.Column="0">
                 <ContentControl Content="{Binding FrontendControl}" />
             </Border>
 
+            <!-- 中间分割条 -->
             <GridSplitter Grid.Column="1"
                           Width="1"
                           HorizontalAlignment="Center"
@@ -74,6 +77,7 @@
                           Background="Transparent"
                           ShowsPreview="True"/>
 
+            <!-- 右侧状态面板 -->
             <hc:SimplePanel Grid.Column="2" Margin="2,0,2,0"
                             Background="{DynamicResource RegionBrush}">
                 <Grid>
@@ -81,84 +85,117 @@
                         <RowDefinition Height="250"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
+
+                    <!-- 上方状态与进度 -->
                     <Border Grid.Row="0" Margin="0,2,0,2"
                             BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
                             Background="{DynamicResource RegionBrush}"
                             CornerRadius="4">
-
-                    <Grid>
+                        <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2.5*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                        
-                            
+
+                            <!-- 左侧：码信息 + 状态 -->
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
 
-                                <Border Grid.Row="0" Grid.ColumnSpan="2" Style="{StaticResource BorderRegion}" Margin="5" Padding="5,5,5,5">
-                                    <StackPanel  Orientation="Vertical"  HorizontalAlignment="Left" >
-                                        <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="蚀刻码:0000000000000000000000000000" Style="{StaticResource TextBlockLargeBold}" FontSize="12" Margin="5,5,0,0"/>
-                                        <TextBlock  VerticalAlignment="Top" HorizontalAlignment="Left" Text="纸质码:FEGIWEUC" Style="{StaticResource TextBlockLargeBold}" FontSize="12" Margin="5,5,0,0"/>
+                                <!-- 蚀刻码 & 纸质码 -->
+                                <Border Grid.Row="0" Grid.ColumnSpan="2" Style="{StaticResource BorderRegion}" Margin="5" Padding="5">
+                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
+                                        <TextBlock Style="{StaticResource TextBlockLargeBold}" HorizontalAlignment="Left" FontSize="12" Margin="5,5,0,0">
+                                            <Run Text="蚀刻码:"/>
+                                            <Run Text="{Binding ViewState.EtchingCode}"/>
+                                        </TextBlock>
+                                        <TextBlock Style="{StaticResource TextBlockLargeBold}" HorizontalAlignment="Left"  FontSize="12" Margin="5,5,0,0">
+                                            <Run Text="纸质码:"/>
+                                            <Run Text="{Binding ViewState.PaperCode}"/>
+                                        </TextBlock>
                                     </StackPanel>
                                 </Border>
 
+                                <!-- 左下：状态信息 -->
                                 <Grid Grid.Row="1">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <Border Grid.Column="0" Style="{StaticResource BorderRegion}" Margin="5,0,5,5" Padding="5,5,5,5">
-                                        <StackPanel  Orientation="Vertical"  HorizontalAlignment="Left" >
-                                        </StackPanel>
-                                    </Border>
-                                    <Border Grid.Column="1" Style="{StaticResource BorderRegion}" Margin="0,0,5,5" Padding="5,5,5,5">
-                                        <StackPanel  Orientation="Vertical"  HorizontalAlignment="Left" >
-                                        </StackPanel>
-                                    </Border>
-                                    <Border Grid.Column="2" Style="{StaticResource BorderRegion}" Margin="0,0,5,5" Padding="5,5,5,5">
-                                        <StackPanel  Orientation="Vertical"  VerticalAlignment="Top" HorizontalAlignment="Left" >
-                                            <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="数据库：连接成功" Style="{StaticResource TextBlockDefaultSuccess}" FontSize="14" Margin="5,5,0,0"/>
-                                            <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="PLC：连接成功" Style="{StaticResource TextBlockDefaultSuccess}" FontSize="14" Margin="5,5,0,0"/>
-                                            <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="MES：Null" Style="{StaticResource TextBlockDefaultDanger}" FontSize="14" Margin="5,5,0,0"/>
-                                            <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="存图网盘：连接成功" Style="{StaticResource TextBlockDefaultSuccess}" FontSize="14" Margin="5,5,0,0"/>
 
+                                    <Border Grid.Column="0" Style="{StaticResource BorderRegion}" Margin="5,0,5,5" Padding="5">
+                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left"/>
+                                    </Border>
+
+                                    <Border Grid.Column="1" Style="{StaticResource BorderRegion}" Margin="0,0,5,5" Padding="5">
+                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left"/>
+                                    </Border>
+
+                                    <Border Grid.Column="2" Style="{StaticResource BorderRegion}" Margin="0,0,5,5" Padding="5">
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left">
+                                            <TextBlock Style="{StaticResource TextBlockDefaultSuccess}" HorizontalAlignment="Left" FontSize="14" Margin="5,5,0,0">
+                                                <Run Text="数据库:"/>
+                                                <Run Text="{Binding ViewState.DbStatus}"/>
+                                            </TextBlock>
+                                            <TextBlock Style="{StaticResource TextBlockDefaultSuccess}" HorizontalAlignment="Left" FontSize="14" Margin="5,5,0,0">
+                                                <Run Text="PLC:"/>
+                                                <Run Text="{Binding ViewState.PlcStatus}"/>
+                                            </TextBlock>
+                                            <TextBlock Style="{StaticResource TextBlockDefaultDanger}" HorizontalAlignment="Left" FontSize="14" Margin="5,5,0,0">
+                                                <Run Text="MES:"/>
+                                                <Run Text="{Binding ViewState.MesStatus}"/>
+                                            </TextBlock>
+                                            <TextBlock Style="{StaticResource TextBlockDefaultSuccess}" HorizontalAlignment="Left" FontSize="14" Margin="5,5,0,0">
+                                                <Run Text="存图网盘:"/>
+                                                <Run Text="{Binding ViewState.NasStatus}"/>
+                                            </TextBlock>
                                         </StackPanel>
                                     </Border>
                                 </Grid>
-
                             </Grid>
 
+                            <!-- 右侧：进度与时间 -->
                             <Grid Grid.Row="0" Grid.Column="1">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <Border Grid.Row="0"  Style="{StaticResource BorderRegion}" Margin="0,5,5,5" Padding="5,5,5,5">
-                                    <StackPanel  Orientation="Vertical">
-                                        <hc:CircleProgressBar  Value="{Binding Value,ElementName=SliderDemo}" Margin="5" Width="100" Height="96" ArcThickness="20" Style="{StaticResource ProgressBarSuccessCircle}"/>
-                                        <Slider Value="50" Name="SliderDemo" Maximum="100"/>
+
+                                <!-- 进度条 -->
+                                <Border Grid.Row="0" Style="{StaticResource BorderRegion}" Margin="0,5,5,5" Padding="5">
+                                    <StackPanel Orientation="Vertical">
+                                        <hc:CircleProgressBar Value="{Binding ViewState.ProgressValue}" 
+                                                              Margin="5" Width="100" Height="96" ArcThickness="20"
+                                                              Style="{StaticResource ProgressBarSuccessCircle}"/>
+                                        <Slider Value="{Binding ViewState.ProgressValue}" Maximum="100"/>
                                     </StackPanel>
                                 </Border>
 
-                                <Border Grid.Row="1" Style="{StaticResource BorderRegion}" Margin="0,0,5,5" Padding="5,5,5,5">
-                                    <StackPanel  Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                        <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="总运行时常：01天02时30秒" Style="{StaticResource TextBlockLarge}" FontSize="12" Margin="5,5,0,0"/>
-                                        <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Text="CT总耗时：16秒" Style="{StaticResource TextBlockLarge}" FontSize="12" Margin="5,5,0,0"/>
-                                        <TextBlock  VerticalAlignment="Top" HorizontalAlignment="Left" Text="单次流程耗时：3秒" Style="{StaticResource TextBlockLarge}" FontSize="12" Margin="5,5,0,0"/>
+                                <!-- 时间信息 -->
+                                <Border Grid.Row="1" Style="{StaticResource BorderRegion}" Margin="0,0,5,5" Padding="5">
+                                    <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                        <TextBlock Style="{StaticResource TextBlockLarge}" HorizontalAlignment="Left" FontSize="12" Margin="5,5,0,0">
+                                            <Run Text="总运行时常:"/>
+                                            <Run Text="{Binding ViewState.RunTime}"/>
+                                        </TextBlock>
+                                        <TextBlock Style="{StaticResource TextBlockLarge}" HorizontalAlignment="Left" FontSize="12" Margin="5,5,0,0">
+                                            <Run Text="CT总耗时:"/>
+                                            <Run Text="{Binding ViewState.CtTime}"/>
+                                        </TextBlock>
+                                        <TextBlock Style="{StaticResource TextBlockLarge}" HorizontalAlignment="Left" FontSize="12" Margin="5,5,0,0">
+                                            <Run Text="单次流程耗时:"/>
+                                            <Run Text="{Binding ViewState.SingleFlowTime}"/>
+                                        </TextBlock>
                                     </StackPanel>
                                 </Border>
-
                             </Grid>
-                        
                         </Grid>
-                        
                     </Border>
 
+                    <!-- 下方日志显示 -->
                     <Border Grid.Row="1" Margin="0,3,0,2"
                             BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
                             Background="{DynamicResource RegionBrush}"
@@ -168,10 +205,8 @@
                                      IsReadOnly="True"
                                      VerticalScrollBarVisibility="Auto"/>
                     </Border>
-
                 </Grid>
             </hc:SimplePanel>
-
         </Grid>
     </Grid>
 </Window>

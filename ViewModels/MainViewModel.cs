@@ -32,7 +32,7 @@ namespace Wpf_RunVision.ViewModels
         /// </summary>
         public ObservableCollection<string> Schemes { get; } = new ObservableCollection<string>();
 
-        
+        public MainViewState ViewState => MainViewState.Instance;
 
         private VisionCoreService visionCoreService;
 
@@ -84,6 +84,17 @@ namespace Wpf_RunVision.ViewModels
 
         public MainViewModel()
         {
+            // 测试绑定（实际运行时可删除）
+            ViewState.EtchingCode = "00000000000000000000";
+            ViewState.PaperCode = "FEGIWEUC";
+            ViewState.DbStatus = false;
+            ViewState.PlcStatus = true;
+            ViewState.MesStatus = false;
+            ViewState.NasStatus = false;
+            ViewState.ProgressValue = 65;
+            ViewState.RunTime = "01天02时30秒";
+            ViewState.CtTime = "16秒";
+            ViewState.SingleFlowTime = "3秒";
             // 异步加载方案列表（避免阻塞UI线程）
             _ = LoadSchemesAsync();
         }
