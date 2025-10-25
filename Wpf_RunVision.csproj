@@ -43,10 +43,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Basler.Pylon">
-      <HintPath>C:\Users\PC\Desktop\Basler.Pylon.dll</HintPath>
+      <HintPath>C:\Users\xing_\Desktop\Basler.Pylon.dll</HintPath>
     </Reference>
     <Reference Include="CamCtrl">
-      <HintPath>C:\Users\PC\Desktop\CamCtrl.dll</HintPath>
+      <HintPath>C:\Users\xing_\Desktop\CamCtrl.dll</HintPath>
     </Reference>
     <Reference Include="CommunityToolkit.Mvvm, Version=8.4.0.0, Culture=neutral, PublicKeyToken=4aff67a105548ee2, processorArchitecture=MSIL">
       <HintPath>packages\CommunityToolkit.Mvvm.8.4.0\lib\netstandard2.0\CommunityToolkit.Mvvm.dll</HintPath>
@@ -57,7 +57,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="GxIAPINET">
-      <HintPath>C:\Users\PC\Desktop\GxIAPINET.dll</HintPath>
+      <HintPath>C:\Users\xing_\Desktop\GxIAPINET.dll</HintPath>
     </Reference>
     <Reference Include="HandyControl, Version=3.5.1.0, Culture=neutral, PublicKeyToken=45be8712787a1e5b, processorArchitecture=MSIL">
       <HintPath>packages\HandyControl.3.5.1\lib\net472\HandyControl.dll</HintPath>
@@ -159,6 +159,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\BoolToStatusTextConverter.cs" />
     <Compile Include="Models\CameraModels.cs" />
     <Compile Include="Models\MainViewState .cs" />
     <Compile Include="Models\PlcModels.cs" />

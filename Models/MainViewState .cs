@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
+using System.Windows.Threading;
 
 namespace Wpf_RunVision.Models
 {
@@ -14,7 +15,9 @@ namespace Wpf_RunVision.Models
         private static readonly MainViewState _instance = new MainViewState();
         public static MainViewState Instance => _instance;
 
-        private MainViewState() { }
+        private MainViewState()
+        {
+        }
         #endregion
 
         private string _etchingCode;
@@ -24,7 +27,6 @@ namespace Wpf_RunVision.Models
         private bool _mesStatus;
         private bool _nasStatus;
         private double _progressValue;
-        private string _runTime;
         private string _ctTime;
         private string _singleFlowTime;
 
@@ -70,12 +72,7 @@ namespace Wpf_RunVision.Models
             set => SetProperty(ref _progressValue, value);
         }
 
-        public string RunTime
-        {
-            get => _runTime;
-            set => SetProperty(ref _runTime, value);
-        }
-
+       
         public string CtTime
         {
             get => _ctTime;
@@ -87,5 +84,6 @@ namespace Wpf_RunVision.Models
             get => _singleFlowTime;
             set => SetProperty(ref _singleFlowTime, value);
         }
+
     }
 }

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using VM.Core;
 using VMControls.WPF.Release;
 using Wpf_RunVision.Models;
@@ -32,6 +33,10 @@ namespace Wpf_RunVision.ViewModels
         /// </summary>
         public ObservableCollection<string> Schemes { get; } = new ObservableCollection<string>();
 
+        // 程序启动时间（用于计算总运行时长）
+        private readonly DateTime _startTime;
+        // 实时时长更新定时器（UI线程安全）
+        private readonly DispatcherTimer _runTimeTimer;
         public MainViewState ViewState => MainViewState.Instance;
 
         private VisionCoreService visionCoreService;
@@ -76,7 +81,12 @@ namespace Wpf_RunVision.ViewModels
             set => SetProperty(ref _canEditScheme, value);
         }
 
-
+        private string _totalRunTime = "0.00:00:00";
+        public string TotalRunTime
+        {
+            get => _totalRunTime;
+            set => SetProperty(ref _totalRunTime, value);
+        }
         /// <summary>
         /// 特殊标记：无方案占位符
         /// </summary>
@@ -84,6 +94,15 @@ namespace Wpf_RunVision.ViewModels
 
         public MainViewModel()
         {
+            // 1. 初始化运行时长相关（启动时间+定时器）
+            _startTime = DateTime.Now;
+            _runTimeTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1) // 每秒更新一次时长
+            };
+            _runTimeTimer.Tick += RunTimeTimer_Tick; // 绑定定时器事件
+            _runTimeTimer.Start(); // 启动定时器
+
             // 测试绑定（实际运行时可删除）
             ViewState.EtchingCode = "00000000000000000000";
             ViewState.PaperCode = "FEGIWEUC";
@@ -92,7 +111,6 @@ namespace Wpf_RunVision.ViewModels
             ViewState.MesStatus = false;
             ViewState.NasStatus = false;
             ViewState.ProgressValue = 65;
-            ViewState.RunTime = "01天02时30秒";
             ViewState.CtTime = "16秒";
             ViewState.SingleFlowTime = "3秒";
             // 异步加载方案列表（避免阻塞UI线程）
@@ -202,6 +220,7 @@ namespace Wpf_RunVision.ViewModels
         /// </summary>
         public ICommand OpenSchemeCommand => new RelayCommand(() =>
         {
+            ViewState.ProgressValue = 11;
             try
             {
                 var mainWindow = Application.Current.MainWindow;
@@ -288,6 +307,7 @@ namespace Wpf_RunVision.ViewModels
                 string solFile = null;
                 string schemeFolder = null;
 
+
                 // 阶段1：后台线程执行耗时操作（释放旧资源、加载配置）
                 await Task.Run(() =>
                 {
@@ -316,7 +336,7 @@ namespace Wpf_RunVision.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        MyLogger.Warn($"旧方案关闭警告：{ex.Message}"); // 非致命错误，仅警告
+                        MyLogger.Warn($"旧方案关闭警告：{ex.Message}");
                     }
                 });
 
@@ -344,8 +364,22 @@ namespace Wpf_RunVision.ViewModels
                 MyLogger.Error($"方案[{schemeName}]加载失败", ex);
                 MessageBox.Show($"方案加载失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            
 
         });
+
+        /// <summary>
+        /// 定时器事件：每秒更新程序总运行时长
+        /// </summary>
+        /// <summary>
+        /// 定时器事件：每秒更新程序总运行时长（改为天时分秒格式）
+        /// </summary>
+        private void RunTimeTimer_Tick(object sender, EventArgs e)
+        {
+            TimeSpan runDuration = DateTime.Now - _startTime;
+            // 中文格式化：天、时、分、秒
+            TotalRunTime = $"{runDuration.Days}天{runDuration.Hours}小时{runDuration.Minutes}分{runDuration.Seconds}秒";
+        }
 
         /// <summary>
         /// 窗口关闭命令（释放资源）
@@ -356,6 +390,10 @@ namespace Wpf_RunVision.ViewModels
             {
                 visionCoreService.DestroyAllCameras();
             }
+            // 停止运行时长定时器（避免内存泄漏）
+            _runTimeTimer.Stop();
+            _runTimeTimer.Tick -= RunTimeTimer_Tick;
+            MyLogger.Info("运行时长定时器已停止");
             MyLogger.Info("程序正常关闭，所有资源已释放");
         });
     }

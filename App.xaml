@@ -1,10 +1,11 @@
 ﻿<Application x:Class="Wpf_RunVision.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Wpf_RunVision.Converters"
              Startup="Application_Startup">
-    
+
     <!--StartupUri="Views/MainWindow.xaml"-->
-    
+
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -20,6 +21,30 @@
             <!--<SolidColorBrush x:Key="RegionBrush" Color="#797979"/>
             <SolidColorBrush x:Key="BorderBrush" Color="#797979"/>
             <SolidColorBrush x:Key="BaseBorderBrush" Color="#797979"/>-->
+
+            <!-- 定义转换器：根据 bool 值返回对应的连接状态文本 -->
+            <converters:BoolToStatusTextConverter x:Key="BoolToStatusTextConverter"
+                                              TrueText="连接成功"
+                                              FalseText="连接失败"/>
+
+            <!-- 定义背景颜色的样式（保持原样） -->
+            <Style x:Key="ConnectionStatusStyle" TargetType="Border">
+                <Setter Property="Background" Value="Gray"/>
+                <!-- 默认背景颜色：灰色 -->
+                <Style.Triggers>
+                    <!-- 数据触发器：当连接状态为 True 时，背景设置为绿色 -->
+                    <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                        <Setter Property="Background" Value="LightGreen"/>
+                    </DataTrigger>
+                    <!-- 数据触发器：当连接状态为 False 时，背景设置为红色 -->
+                    <DataTrigger Binding="{Binding IsConnected}" Value="False">
+                        <Setter Property="Background" Value="LightCoral"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
+
         </ResourceDictionary>
+
     </Application.Resources>
 </Application>
