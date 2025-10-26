@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Wpf_RunVision.Models
 {
-    public class PlcModels
+    public class PlcModel
     {
         public string Brand { set; get;}
         public string Protocol { set; get; }

@@ -35,7 +35,9 @@ namespace Wpf_RunVision.Services
         // 生产者取消令牌
         private CancellationTokenSource _hardTriggerCts;
 
-        
+        private ProjectConfigs _projectConfigs;
+
+
         #endregion
 
         #region 构造函数
@@ -46,15 +48,20 @@ namespace Wpf_RunVision.Services
         /// <param name="projectConfigs">项目配置，包括相机列表和PLC配置</param>
         public VisionCoreService(ProjectConfigs projectConfigs)
         {
-           
-            if (projectConfigs.Cameras == null || projectConfigs.Cameras.Count == 0)
+            _projectConfigs = projectConfigs;
+            if (_projectConfigs.CamerasConfigs == null || _projectConfigs.CamerasConfigs.Count == 0)
             {
                 MyLogger.Error("相机配置列表为空，无法初始化！");
                 return;
             }
+            if (_projectConfigs.PlcConfig == null || string.IsNullOrEmpty(_projectConfigs.PlcConfig.Ip) || string.IsNullOrEmpty(_projectConfigs.PlcConfig.Port))
+            {
+                MyLogger.Error("PLC配置为空，无法初始化！");
+                return;
+            }
 
             // 初始化相机
-            foreach (var item in projectConfigs.Cameras)
+            foreach (var item in projectConfigs.CamerasConfigs)
             {
                 try
                 {
@@ -94,14 +101,13 @@ namespace Wpf_RunVision.Services
                 }
             }
 
-            // 初始化PLC
             try
             {
-                _plcService = PlcFactory.Create(projectConfigs.PlcConfig.Brand);
+                _plcService = PlcFactory.Create(_projectConfigs.PlcConfig.Brand);
+                MainViewState.Instance.PlcStatus =_plcService.Connect(_projectConfigs.PlcConfig.Ip, int.Parse(_projectConfigs.PlcConfig.Port));
             }
             catch (Exception ex)
             {
-                MyLogger.Error($"PLC 初始化失败：{ex.Message}");
                 MessageBox.Show($"PLC 初始化失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -166,7 +172,7 @@ namespace Wpf_RunVision.Services
                         //写PLC完成信号
                         if (!string.IsNullOrWhiteSpace(cameraInstance.PlcAddress))
                         {
-                            //_plcService.WriteValue(cameraInstance.PlcAddress, true);
+                            _plcService.Write(cameraInstance.PlcAddress, "0");
                             MyLogger.Info($"PLC完成信号写入：{cameraInstance.PlcAddress}");
                         }
                     });
@@ -200,7 +206,7 @@ namespace Wpf_RunVision.Services
                         try
                         {
                             processImageAction?.Invoke(item);
-                            
+
                         }
                         catch (Exception ex)
                         {

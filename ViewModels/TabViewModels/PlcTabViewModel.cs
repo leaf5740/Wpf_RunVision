@@ -18,7 +18,7 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
         private readonly ObservableCollection<string> _plcBrands = new ObservableCollection<string> { "汇川", "三菱" };
         private string _selectedProtocol;
         private string _selectedBrand;
-        private  PlcModels _plcConfig = new PlcModels(); // 显式指定类型，避免目标类型推断
+        private  PlcModel _plcConfig = new PlcModel(); // 显式指定类型，避免目标类型推断
         private IPlcService _plcService;
 
         public ObservableCollection<PLCAddressModels> ReadPLCAddress { get; private set; } = new ObservableCollection<PLCAddressModels>();
@@ -40,7 +40,7 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
             set => SetProperty(ref _selectedBrand, value);
         }
 
-        public PlcModels PlcConfig
+        public PlcModel PlcConfig
         {
             get => _plcConfig;
             set => SetProperty(ref _plcConfig, value);
@@ -68,7 +68,7 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
         {
             InitializeAddressModels();
             LoadPlcConfig();
-            InitializeSelectedItems();
+            //InitializeSelectedItems();
         }
 
         /// <summary>
@@ -90,9 +90,7 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
 
             var receiveSignals = new List<string>
             {
-                "相机1Ready信号", "相机2Ready信号", "相机3Ready信号",
-                "相机4Ready信号", "扫码枪Ready信号", "扫码枪失败信号",
-                "检测完成信号", "复位完成信号"
+                "扫码枪失败信号","检测完成信号", "复位完成信号"
             };
             foreach (var name in receiveSignals)
             {
@@ -198,9 +196,10 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
             {
                 _plcService = PlcFactory.Create(SelectedBrand);
                 bool isSuccess = _plcService != null && _plcService.Connect(PlcConfig.Ip, port); // 替换 ?. 语法的等效判断
-
+                MainViewState.Instance.PlcStatus = isSuccess;
                 if (isSuccess)
                 {
+
                     MessageBox.Show("PLC连接成功！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
@@ -225,7 +224,7 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
                 var currentConfig = configHelper.CurrentConfigs;
                 if (currentConfig == null) return;
 
-                currentConfig.PlcConfig = new PlcModels
+                currentConfig.PlcConfig = new PlcModel
                 {
                     Ip = PlcConfig.Ip,
                     Port = PlcConfig.Port,

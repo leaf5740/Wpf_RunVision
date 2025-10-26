@@ -44,8 +44,8 @@
                 <views:PlcTabView/>
             </hc:TabItem>
 
-            <hc:TabItem Header="MySql配置">
-                <views:MySqlTabView/>
+            <hc:TabItem Header="数据库配置">
+                <views:DatabaseTabView/>
             </hc:TabItem>
 
             <hc:TabItem Header="Vm方案配置">

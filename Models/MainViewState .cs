@@ -24,7 +24,6 @@ namespace Wpf_RunVision.Models
         private string _paperCode;
         private bool _dbStatus;
         private bool _plcStatus;
-        private bool _mesStatus;
         private bool _nasStatus;
         private double _progressValue;
         private string _ctTime;
@@ -52,12 +51,6 @@ namespace Wpf_RunVision.Models
         {
             get => _plcStatus;
             set => SetProperty(ref _plcStatus, value);
-        }
-
-        public bool MesStatus
-        {
-            get => _mesStatus;
-            set => SetProperty(ref _mesStatus, value);
         }
 
         public bool NasStatus

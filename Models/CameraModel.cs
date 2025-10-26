@@ -1,6 +1,6 @@
 ﻿namespace Wpf_RunVision.Models{
 
-    public class CameraModels 
+    public class CameraModel 
     {
         //相机品牌
         public string Brand { get; set; }

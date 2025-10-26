@@ -18,10 +18,10 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
         // 可用序列号列表（绑定第二个ComboBox）
         private readonly ObservableCollection<string> _availableSNs = new ObservableCollection<string>();
         // 已配置相机列表（绑定DataGrid）
-        private readonly ObservableCollection<CameraModels> _cameras = new ObservableCollection<CameraModels>();
+        private readonly ObservableCollection<CameraModel> _cameras = new ObservableCollection<CameraModel>();
 
         // 绑定的选中项（初始化为null，实现默认不选中）
-        private CameraModels _selectedCamera;
+        private CameraModel _selectedCamera;
         private string _selectedBrand; // 初始为null，默认不选中品牌
         private string _selectedSN;
         private string _selectedPlcAddress;
@@ -37,12 +37,12 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
         /// <summary>
         /// 已配置相机列表（DataGrid的ItemsSource）
         /// </summary>
-        public ObservableCollection<CameraModels> Cameras => _cameras;
+        public ObservableCollection<CameraModel> Cameras => _cameras;
 
         /// <summary>
         /// 选中的相机（DataGrid的SelectedItem）
         /// </summary>
-        public CameraModels SelectedCamera
+        public CameraModel SelectedCamera
         {
             get => _selectedCamera;
             set
@@ -260,7 +260,7 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
         {
             if (string.IsNullOrEmpty(SelectedPlcAddress))
             {
-                MessageBox.Show($"相机完成信号不能为空！", "提示");
+                MessageBox.Show($"Ready信号不能为空！", "提示");
                 return;
             }
             if (_cameras.Any(c => c.Sn == SelectedSN))
@@ -271,11 +271,11 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
 
             if (_cameras.Any(c => c.PlcAddress == SelectedPlcAddress))
             {
-                MessageBox.Show($"相机完成信号为{SelectedPlcAddress}的地址已存在！", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"Ready信号为{SelectedPlcAddress}的地址已存在！", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            var newCamera = new CameraModels
+            var newCamera = new CameraModel
             {
                 Brand = SelectedBrand,
                 Sn = SelectedSN,
@@ -308,7 +308,7 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
             try
             {
                 var configHelper = ProjectConfigHelper.Instance;
-                configHelper.CurrentConfigs.Cameras = _cameras.ToList();
+                configHelper.CurrentConfigs.CamerasConfigs = _cameras.ToList();
                 configHelper.SaveConfig();
                 MessageBox.Show("相机配置保存成功！", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -326,7 +326,7 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
             try
             {
                 var configHelper = ProjectConfigHelper.Instance;
-                var savedCameras = configHelper.CurrentConfigs?.Cameras;
+                var savedCameras = configHelper.CurrentConfigs?.CamerasConfigs;
 
                 if (savedCameras != null && savedCameras.Any())
                 {

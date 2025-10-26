@@ -95,6 +95,7 @@
                 hc:InfoElement.Title="PLC_IP地址:"
                 Text="{Binding PlcConfig.Ip, Mode=TwoWay}"
                 Style="{StaticResource TextBoxExtend}"
+                hc:InfoElement.Placeholder="请输入IP地址"
                 Margin="0,0,0,10"/>
 
             <!-- Port -->
@@ -103,6 +104,7 @@
                 hc:InfoElement.Title="PLC_端口号:"
                 Text="{Binding PlcConfig.Port, Mode=TwoWay}"
                 Style="{StaticResource TextBoxExtend}"
+                hc:InfoElement.Placeholder="请输入端口号"
                 Margin="0,0,0,10"/>
             
             <!-- 分隔线 -->

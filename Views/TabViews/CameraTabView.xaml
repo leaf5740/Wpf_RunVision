@@ -28,7 +28,7 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Binding="{Binding Brand}" Header="相机名称" IsReadOnly="True"/>
                 <DataGridTextColumn Binding="{Binding Sn}" Header="SN"/>
-                <DataGridTextColumn Binding="{Binding PlcAddress}" Header="相机完成信号"/>
+                <DataGridTextColumn Binding="{Binding PlcAddress}" Header="Ready信号"/>
                 <DataGridTextColumn Binding="{Binding Remark}" Header="备注"/>
             </DataGrid.Columns>
         </DataGrid>
@@ -51,7 +51,6 @@
                       hc:InfoElement.TitlePlacement="Top"
                       Style="{StaticResource ComboBoxExtend}"
                       HorizontalAlignment="Stretch"
-                      ToolTip="必选，相机品牌"
                       Margin="0,0,0,10"/>
 
             <ComboBox Grid.Row="1"
@@ -61,17 +60,15 @@
                       hc:InfoElement.TitlePlacement="Top"
                       Style="{StaticResource ComboBoxExtend}"
                       HorizontalAlignment="Stretch"
-                      ToolTip="必选，相机序列号"
                       Margin="0,0,0,10"/>
 
             <TextBox Grid.Row="2"
-                     hc:InfoElement.Title="相机完成信号:"
+                     hc:InfoElement.Title="Ready信号:"
                      Text="{Binding SelectedPlcAddress, Mode=TwoWay}"
                      hc:InfoElement.TitlePlacement="Top"
                      Style="{StaticResource TextBoxExtend}"
                      HorizontalAlignment="Stretch"
-                     hc:InfoElement.Placeholder="必填"
-                     ToolTip="必填，相机完成信号"
+                     hc:InfoElement.Placeholder="请输入Ready信号（PLC地址）"
                      Margin="0,0,0,10"/>
 
             <TextBox Grid.Row="3"
@@ -80,8 +77,7 @@
                      hc:InfoElement.TitlePlacement="Top"
                      Style="{StaticResource TextBoxExtend}"
                      HorizontalAlignment="Stretch"
-                     hc:InfoElement.Placeholder="可空"
-                     ToolTip="可选，相机备注信息"
+                     hc:InfoElement.Placeholder="请输入相机备注（可空）"
                      Margin="0,0,0,10"/>
 
             <hc:Divider Grid.Row="4"

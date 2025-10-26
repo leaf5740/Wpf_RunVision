@@ -18,9 +18,9 @@ namespace Wpf_RunVision.Views.TabViews
     /// <summary>
     /// MySqlTabView.xaml 的交互逻辑
     /// </summary>
-    public partial class MySqlTabView : UserControl
+    public partial class DatabaseTabView : UserControl
     {
-        public MySqlTabView()
+        public DatabaseTabView()
         {
             InitializeComponent();
         }

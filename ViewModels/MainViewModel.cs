@@ -14,6 +14,7 @@ using VM.Core;
 using VMControls.WPF.Release;
 using Wpf_RunVision.Models;
 using Wpf_RunVision.Services;
+using Wpf_RunVision.Services.Plc;
 using Wpf_RunVision.Utils;
 using Wpf_RunVision.Views;
 
@@ -81,6 +82,19 @@ namespace Wpf_RunVision.ViewModels
             set => SetProperty(ref _canEditScheme, value);
         }
 
+        /// <summary>   
+        /// 是否显示加载遮罩
+        /// </summary>
+        private Visibility _isAnimation = Visibility.Hidden;
+        public Visibility IsAnimation
+        {
+            get => _isAnimation;
+            set => SetProperty(ref _isAnimation, value);
+        }
+
+        /// <summary>
+        /// 总运行时间
+        /// </summary>
         private string _totalRunTime = "0.00:00:00";
         public string TotalRunTime
         {
@@ -107,12 +121,12 @@ namespace Wpf_RunVision.ViewModels
             ViewState.EtchingCode = "00000000000000000000";
             ViewState.PaperCode = "FEGIWEUC";
             ViewState.DbStatus = false;
-            ViewState.PlcStatus = true;
-            ViewState.MesStatus = false;
+            ViewState.PlcStatus = false;
             ViewState.NasStatus = false;
             ViewState.ProgressValue = 65;
             ViewState.CtTime = "16秒";
             ViewState.SingleFlowTime = "3秒";
+
             // 异步加载方案列表（避免阻塞UI线程）
             _ = LoadSchemesAsync();
         }
@@ -304,9 +318,9 @@ namespace Wpf_RunVision.ViewModels
 
             try
             {
+              
                 string solFile = null;
                 string schemeFolder = null;
-
 
                 // 阶段1：后台线程执行耗时操作（释放旧资源、加载配置）
                 await Task.Run(() =>
@@ -319,7 +333,9 @@ namespace Wpf_RunVision.ViewModels
 
                     // 加载方案配置
                     ProjectConfigHelper.Instance.LoadConfig(schemeFolder);
-
+                    visionCoreService = new VisionCoreService(ProjectConfigHelper.Instance.CurrentConfigs);
+                    //显示加载遮罩
+                    IsAnimation = Visibility.Visible;
                     // 查找.sol核心文件
                     solFile = Directory.GetFiles(schemeFolder, "*.sol", SearchOption.TopDirectoryOnly).FirstOrDefault();
                     if (solFile == null)
@@ -352,27 +368,28 @@ namespace Wpf_RunVision.ViewModels
                     // 更新UI状态
                     CurrentScheme = $"当前方案：{schemeName}";
                     MyLogger.Info($"方案[{schemeName}]加载完成");
-                    visionCoreService = new VisionCoreService(ProjectConfigHelper.Instance.CurrentConfigs);
-
+                    
 
                 });
+
             }
             catch (Exception ex)
             {
-                // 加载失败时恢复状态
                 CurrentScheme = "当前方案：null";
                 MyLogger.Error($"方案[{schemeName}]加载失败", ex);
                 MessageBox.Show($"方案加载失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            
+            finally
+            {
+                //隐藏加载遮罩
+                IsAnimation = Visibility.Hidden;
+            }
+
 
         });
 
         /// <summary>
         /// 定时器事件：每秒更新程序总运行时长
-        /// </summary>
-        /// <summary>
-        /// 定时器事件：每秒更新程序总运行时长（改为天时分秒格式）
         /// </summary>
         private void RunTimeTimer_Tick(object sender, EventArgs e)
         {
@@ -393,7 +410,6 @@ namespace Wpf_RunVision.ViewModels
             // 停止运行时长定时器（避免内存泄漏）
             _runTimeTimer.Stop();
             _runTimeTimer.Tick -= RunTimeTimer_Tick;
-            MyLogger.Info("运行时长定时器已停止");
             MyLogger.Info("程序正常关闭，所有资源已释放");
         });
     }

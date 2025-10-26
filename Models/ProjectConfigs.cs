@@ -3,6 +3,8 @@ using Wpf_RunVision.Models;
 
 public class ProjectConfigs
 {
-    public List<CameraModels> Cameras { get; set; } = new List<CameraModels>();
-    public PlcModels PlcConfig { get; set; } = new PlcModels();
+    public List<CameraModel> CamerasConfigs { get; set; } = new List<CameraModel>();
+    public PlcModel PlcConfig { get; set; } = new PlcModel();
+
+    public DatabaseModel DatabaseConfig { get; set; } = new DatabaseModel();
 }

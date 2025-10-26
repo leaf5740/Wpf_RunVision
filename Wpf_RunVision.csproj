@@ -160,9 +160,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\BoolToStatusTextConverter.cs" />
-    <Compile Include="Models\CameraModels.cs" />
+    <Compile Include="Models\CameraModel.cs" />
+    <Compile Include="Models\DatabaseModel.cs" />
     <Compile Include="Models\MainViewState .cs" />
-    <Compile Include="Models\PlcModels.cs" />
+    <Compile Include="Models\PlcModel.cs" />
     <Compile Include="Models\ProjectConfigs.cs" />
     <Compile Include="Services\Cameras\cameralibs\DHCamera\CFps.cs" />
     <Compile Include="Services\Cameras\cameralibs\DHCamera\CStatistics.cs" />
@@ -181,10 +182,11 @@
     <Compile Include="Services\Cameras\mode\DaHengCamera.cs" />
     <Compile Include="Services\Cameras\mode\HIKCamera.cs" />
     <Compile Include="Services\Core\VisionCoreService.cs" />
-    <Compile Include="Services\Plc\InovancePlcService.cs" />
+    <Compile Include="Services\Plc\InovanceModbusTcp.cs" />
     <Compile Include="Services\Plc\IPlcService.cs" />
-    <Compile Include="Services\Plc\MitsubishiPlcService.cs" />
+    <Compile Include="Services\Plc\MitsubishiModbusTcp.cs" />
     <Compile Include="Services\Plc\ModbusTcpBase .cs" />
+    <Compile Include="Services\Plc\PlcAddressHelper.cs" />
     <Compile Include="Services\Plc\PlcFactory.cs" />
     <Compile Include="Utils\KeyboardHelper.cs" />
     <Compile Include="Utils\ProjectConfigHelper.cs" />
@@ -194,7 +196,7 @@
     <Compile Include="ViewModels\PermissionViewModel.cs" />
     <Compile Include="ViewModels\TabViewModels\GeneralTabViewModel.cs" />
     <Compile Include="ViewModels\TabViewModels\MesTabViewModel.cs" />
-    <Compile Include="ViewModels\TabViewModels\MySqlTabViewModel.cs" />
+    <Compile Include="ViewModels\TabViewModels\DatabaseTabViewModel.cs" />
     <Compile Include="ViewModels\TabViewModels\PlcTabViewModel.cs" />
     <Compile Include="ViewModels\SchemeConfigViewModel.cs" />
     <Compile Include="ViewModels\TabViewModels\SaveImageTabViewModel.cs" />
@@ -211,8 +213,8 @@
     <Compile Include="Views\TabViews\MesTabView.xaml.cs">
       <DependentUpon>MesTabView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\TabViews\MySqlTabView.xaml.cs">
-      <DependentUpon>MySqlTabView.xaml</DependentUpon>
+    <Compile Include="Views\TabViews\DatabaseTabView.xaml.cs">
+      <DependentUpon>DatabaseTabView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TabViews\PlcTabView.xaml.cs">
       <DependentUpon>PlcTabView.xaml</DependentUpon>
@@ -254,7 +256,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\TabViews\MySqlTabView.xaml">
+    <Page Include="Views\TabViews\DatabaseTabView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
