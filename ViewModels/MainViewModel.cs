@@ -14,6 +14,8 @@ using VM.Core;
 using VMControls.WPF.Release;
 using Wpf_RunVision.Models;
 using Wpf_RunVision.Services;
+using Wpf_RunVision.Services.Mysql;
+using Wpf_RunVision.Services.MySql;
 using Wpf_RunVision.Services.Plc;
 using Wpf_RunVision.Utils;
 using Wpf_RunVision.Views;

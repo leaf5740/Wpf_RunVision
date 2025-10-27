@@ -7,6 +7,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Wpf_RunVision.Models;
+using Wpf_RunVision.Services.Mysql;
+using Wpf_RunVision.Services.MySql;
 using Wpf_RunVision.Services.Plc;
 using Wpf_RunVision.Utils;
 
@@ -97,19 +99,52 @@ namespace Wpf_RunVision.Services
                 catch (Exception ex)
                 {
                     MyLogger.Error($"相机[{item.Sn}]初始化异常：{ex.Message}");
-                    MessageBox.Show($"相机[{item.Sn}]初始化失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
 
-            try
+            // 初始化PLC连接
+            _plcService = PlcFactory.Create(_projectConfigs.PlcConfig.Brand);
+            MainViewState.Instance.PlcStatus = _plcService.Connect(_projectConfigs.PlcConfig.Ip, int.Parse(_projectConfigs.PlcConfig.Port));
+
+            // 初始化数据库
+            MainViewState.Instance.DbStatus = MySqlDataService.Instance.Initialize(_projectConfigs.DatabaseConfig.Ip, int.Parse(_projectConfigs.DatabaseConfig.Port), _projectConfigs.DatabaseConfig.LibraryName, "root", _projectConfigs.DatabaseConfig.Password);
+
+            int totalData = 5000;  // 生成 5000 条 DataTable
+            int totalCode = 2000;  // 生成 2000 条 CodeTable
+
+            for (int i = 1; i <= totalData; i++)
             {
-                _plcService = PlcFactory.Create(_projectConfigs.PlcConfig.Brand);
-                MainViewState.Instance.PlcStatus =_plcService.Connect(_projectConfigs.PlcConfig.Ip, int.Parse(_projectConfigs.PlcConfig.Port));
+                var d1 = new DataTableName
+                {
+                    DetaTime = DateTime.Now,
+                    PhotoName = $"photo_{i}.jpg",
+                    PCS号 = $"PCS{i:D5}",
+                    PaperCode = $"Paper{i:D5}",
+                    LaserCode = $"Laser{i:D5}",
+                    Lot = $"Lot{i:D5}",
+                    UserID = $"User{i % 10}",
+                    Item = $"Item{i % 5}",
+                    Model = $"Model{i % 3}",
+                    PointSet = $"P{i},P{i + 1},P{i + 2}",
+                    Result = i % 2 == 0 ? "OK" : "NG"
+                };
+                MySqlDataService.Instance.EnqueueData(d1);
             }
-            catch (Exception ex)
+
+            for (int i = 1; i <= totalCode; i++)
             {
-                MessageBox.Show($"PLC 初始化失败：{ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                var d2 = new CodeTableName
+                {
+                    DetaTime = DateTime.Now,
+                    Code = $"CODE{i:D5}"
+                };
+                MySqlDataService.Instance.EnqueueCode(d2);
             }
+
+            Console.WriteLine("开始批量上传...");
+            MySqlDataService.Instance.UploadAllFireAndForget(_projectConfigs.DatabaseConfig.DataTableName,_projectConfigs.DatabaseConfig.CodeTableName);
+
+
         }
 
         #endregion
