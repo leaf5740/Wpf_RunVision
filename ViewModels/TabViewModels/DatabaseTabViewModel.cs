@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
 using System.Windows;
 using Wpf_RunVision.Models;
 using Wpf_RunVision.Utils;
@@ -32,12 +33,13 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
 
         public DatabaseTabViewModel()
         {
-            LoadPlcConfig();
+            SelectedDatabase = AvailableDatabases[0];
+            LoadDatabasesConfig();
             ConnectCommand = new RelayCommand(Connect);
             SaveConfigCommand = new RelayCommand(SaveConfig);
         }
         //加载数据库配置
-        private void LoadPlcConfig()
+        private void LoadDatabasesConfig()
         {
             try
             {
@@ -49,10 +51,12 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
                 if (databaseConfig == null) return;
 
                 // 同步基础配置
-                SelectedDatabase = databaseConfig.Brand;
                 _databaseModel.Ip = databaseConfig.Ip;
                 _databaseModel.Port = databaseConfig.Port;
                 _databaseModel.Password = databaseConfig.Password;
+                _databaseModel.LibraryName = databaseConfig.LibraryName;
+                _databaseModel.CodeTableName = databaseConfig.CodeTableName;
+                _databaseModel.DataTableName = databaseConfig.DataTableName;
 
             }
             catch (Exception ex)
@@ -64,6 +68,42 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
 
         private void Connect()
         {
+            if (string.IsNullOrEmpty(DatabaseModel.Ip) || !IPAddress.TryParse(DatabaseModel.Ip, out _))
+            {
+                MessageBox.Show("请输入有效的IP地址！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (!int.TryParse(DatabaseModel.Port, out int port) || port < 1 || port > 65535)
+            {
+                MessageBox.Show("请输入有效的端口号（1-65535）！", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(DatabaseModel.Password))
+            {
+                MessageBox.Show("密码不能为空！","提示");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(DatabaseModel.LibraryName))
+            {
+                MessageBox.Show("库名不能为空！", "提示");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(DatabaseModel.CodeTableName))
+            {
+                MessageBox.Show("Code表名不能为空！", "提示");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(DatabaseModel.DataTableName))
+            {
+                MessageBox.Show("Data表名不能为空！", "提示");
+                return;
+            }
+
             // 这里模拟连接测试
             bool success = !string.IsNullOrEmpty(DatabaseModel.Ip) && !string.IsNullOrEmpty(DatabaseModel.Port);
             MessageBox.Show(success ? "连接成功" : "连接失败");
@@ -79,10 +119,12 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
 
                 currentConfig.DatabaseConfig = new DatabaseModel
                 {
-                    Brand = SelectedDatabase,
                     Ip = DatabaseModel.Ip,
                     Port = DatabaseModel.Port,
-                    Password = DatabaseModel.Password
+                    Password = DatabaseModel.Password,
+                    LibraryName = DatabaseModel.LibraryName,
+                    CodeTableName = DatabaseModel.CodeTableName,
+                    DataTableName = DatabaseModel.DataTableName
                 };
 
                 configHelper.SaveConfig();

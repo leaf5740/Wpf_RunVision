@@ -37,6 +37,9 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <!-- 数据库类型 -->
@@ -75,16 +78,41 @@
                 hc:InfoElement.Placeholder="请输入密码"
                 Margin="0,0,0,10"/>
 
+
+            <TextBox 
+                Grid.Row="4"
+                hc:InfoElement.Title="库名:"
+                Text="{Binding DatabaseModel.LibraryName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Style="{StaticResource TextBoxExtend}"
+                hc:InfoElement.Placeholder="请输入库名（示例：255）"
+                Margin="0,0,0,10"/>
+
+            <TextBox 
+                Grid.Row="5"
+                hc:InfoElement.Title="Code表名:"
+                Text="{Binding DatabaseModel.CodeTableName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Style="{StaticResource TextBoxExtend}"
+                hc:InfoElement.Placeholder="请输入Code表名（示例：table_code）"
+                Margin="0,0,0,10"/>
+
+            <TextBox 
+                Grid.Row="6"
+                hc:InfoElement.Title="Data表名:"
+                Text="{Binding DatabaseModel.DataTableName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Style="{StaticResource TextBoxExtend}"
+                hc:InfoElement.Placeholder="请输入Data表名（示例：table_up）"
+                Margin="0,0,0,10"/>
+            
             <!-- 分隔线 -->
             <hc:Divider 
-                Grid.Row="4"
+                Grid.Row="7"
                 LineStrokeThickness="1"
                 Orientation="Horizontal"
                 Margin="0,0,0,10"/>
 
             <!-- 连接测试按钮 -->
             <Button 
-                Grid.Row="5"
+                Grid.Row="8"
                 Height="40"
                 Content="数据库连接测试"
                 Command="{Binding ConnectCommand}"
@@ -94,7 +122,7 @@
             <!-- 保存配置按钮 -->
             <Button 
                 Height="40"
-                Grid.Row="6"
+                Grid.Row="9"
                 Content="保存配置"
                 Command="{Binding SaveConfigCommand}"
                 HorizontalAlignment="Stretch"/>

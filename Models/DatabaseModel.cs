@@ -9,11 +9,12 @@ namespace Wpf_RunVision.Models
 {
     public class DatabaseModel : ObservableObject
     {
-        public string Brand { set; get; }
-        
         public string Ip { set; get; }
         public string Port { set; get; }
         public string Password { set; get; }
+        public string LibraryName { set; get; }
+        public string CodeTableName { set; get; }
+        public string DataTableName { set; get; }
 
     }
 }
