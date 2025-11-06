@@ -30,27 +30,18 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <TextBox 
                 Grid.Row="0"
-                hc:InfoElement.Title="存OK图路径:"
-                Text="{Binding ImageSaveModel.OkImageSavePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                hc:InfoElement.Title="存图路径:"
+                Text="{Binding ImageSaveModel.ImageSavePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 Style="{StaticResource TextBoxExtend}"
                 hc:InfoElement.Placeholder="请输入存图路径"
                 Margin="0,0,0,10"/>
 
             <TextBox 
                 Grid.Row="1"
-                hc:InfoElement.Title="存NG图路径:"
-                Text="{Binding ImageSaveModel.NgImageSavePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                Style="{StaticResource TextBoxExtend}"
-                hc:InfoElement.Placeholder="请输入存图路径"
-                Margin="0,0,0,10"/>
-
-            <TextBox 
-                Grid.Row="2"
                 hc:InfoElement.Title="压缩等级:"
                 Text="{Binding ImageSaveModel.CompressionLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 Style="{StaticResource TextBoxExtend}"
@@ -58,7 +49,7 @@
                 Margin="0,0,0,10"/>
 
             <!-- 分隔线 -->
-            <hc:Divider Grid.Row="3"
+            <hc:Divider Grid.Row="2"
                         LineStrokeThickness="1"
                         Orientation="Horizontal"
                         Margin="0,0,0,10"/>
@@ -66,7 +57,7 @@
             <!-- 保存配置按钮 -->
             <Button 
                 Height="40"
-                Grid.Row="4"
+                Grid.Row="3"
                 Content="保存配置"
                 Command="{Binding SaveConfigCommand}"
                 HorizontalAlignment="Stretch"/>

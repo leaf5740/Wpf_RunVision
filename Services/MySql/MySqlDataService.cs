@@ -93,7 +93,7 @@ namespace Wpf_RunVision.Services.Mysql
                 using (var conn = new MySqlConnection(masterConnStr))
                 {
                     conn.Open();
-                    MyLogger.Info($"MySQL服务连接成功 -> {ip}:{port}");
+                    //MyLogger.Info($"MySQL服务连接成功 -> {ip}:{port}");
 
                     // 4. 检查并创建数据库（修复异步，改为同步）
                     if (!CheckDatabaseExists(conn, database))
@@ -103,7 +103,7 @@ namespace Wpf_RunVision.Services.Mysql
                     }
                     else
                     {
-                        MyLogger.Info($"数据库 [{database}] 已存在，跳过创建");
+                        //MyLogger.Info($"数据库 [{database}] 已存在，跳过创建");
                     }
                 }
 
@@ -112,7 +112,7 @@ namespace Wpf_RunVision.Services.Mysql
                 using (var conn = new MySqlConnection(_connectionString))
                 {
                     conn.Open();
-                    MyLogger.Info($"数据库 [{ip}:{port}/{database}] 连接成功");
+                    MyLogger.Info($"MySQL [{ip}:{port}/{database}] 连接成功！");
                 }
 
                 _isInitialized = true;

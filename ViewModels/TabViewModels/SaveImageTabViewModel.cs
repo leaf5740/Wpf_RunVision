@@ -87,15 +87,9 @@ namespace Wpf_RunVision.ViewModels.TabViewModels
         private bool ValidateImageSaveConfig(out string errorMsg)
         {
             // 校验存储路径和压缩等级
-            if (string.IsNullOrEmpty(ImageSaveModel.OkImageSavePath))
+            if (string.IsNullOrEmpty(ImageSaveModel.ImageSavePath))
             {
-                errorMsg = "存储OK图路径不能为空！";
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(ImageSaveModel.NgImageSavePath))
-            {
-                errorMsg = "存储NG图路径不能为空！";
+                errorMsg = "存储图路径不能为空！";
                 return false;
             }
 

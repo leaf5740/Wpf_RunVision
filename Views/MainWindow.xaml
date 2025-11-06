@@ -143,11 +143,11 @@
                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
                                         <TextBlock Style="{StaticResource TextBlockLargeBold}" HorizontalAlignment="Left" FontSize="12" Margin="5,5,0,0">
                                             <Run Text="蚀刻码:" />
-                                            <Run Text="{Binding ViewState.EtchingCode}" />
+                                            <Run Text="{Binding EtchingCode}" />
                                         </TextBlock>
                                         <TextBlock Style="{StaticResource TextBlockLargeBold}" HorizontalAlignment="Left" FontSize="12" Margin="5,5,0,0">
                                             <Run Text="纸质码:" />
-                                            <Run Text="{Binding ViewState.PaperCode}" />
+                                            <Run Text="{Binding PaperCode}" />
                                         </TextBlock>
                                     </StackPanel>
                                 </Border>
@@ -176,10 +176,10 @@
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ViewState.PlcStatus}" Value="True">
+                                                            <DataTrigger Binding="{Binding PlcStatus}" Value="True">
                                                                 <Setter Property="Foreground" Value="Green" />
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding ViewState.PlcStatus}" Value="False">
+                                                            <DataTrigger Binding="{Binding PlcStatus}" Value="False">
                                                                 <Setter Property="Foreground" Value="Red" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -193,10 +193,10 @@
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ViewState.DbStatus}" Value="True">
+                                                            <DataTrigger Binding="{Binding DbStatus}" Value="True">
                                                                 <Setter Property="Foreground" Value="Green" />
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding ViewState.DbStatus}" Value="False">
+                                                            <DataTrigger Binding="{Binding DbStatus}" Value="False">
                                                                 <Setter Property="Foreground" Value="Red" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -210,10 +210,10 @@
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding ViewState.NasStatus}" Value="True">
+                                                            <DataTrigger Binding="{Binding NasStatus}" Value="True">
                                                                 <Setter Property="Foreground" Value="Green" />
                                                             </DataTrigger>
-                                                            <DataTrigger Binding="{Binding ViewState.NasStatus}" Value="False">
+                                                            <DataTrigger Binding="{Binding NasStatus}" Value="False">
                                                                 <Setter Property="Foreground" Value="Red" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
@@ -238,10 +238,10 @@
                                 <!-- 进度条 -->
                                 <Border Grid.Row="0" Style="{StaticResource BorderRegion}" Margin="0,5,5,5" Padding="5">
                                     <StackPanel Orientation="Vertical">
-                                        <hc:CircleProgressBar Value="{Binding ViewState.ProgressValue}"
+                                        <hc:CircleProgressBar Value="{Binding ProgressValue}"
                                                               Margin="5" Width="100" Height="96" ArcThickness="20"
                                                               Style="{StaticResource ProgressBarSuccessCircle}" />
-                                        <Slider Value="{Binding ViewState.ProgressValue}" Maximum="100" />
+                                        <Slider Value="{Binding ProgressValue}" Maximum="100" />
                                     </StackPanel>
                                 </Border>
 
@@ -250,11 +250,11 @@
                                     <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Left">
                                         <TextBlock Style="{StaticResource TextBlockLarge}" HorizontalAlignment="Left" FontSize="12" Margin="5,5,0,0">
                                             <Run Text="CT总耗时:" />
-                                            <Run Text="{Binding ViewState.CtTime}" />
+                                            <Run Text="{Binding CtTime}" />
                                         </TextBlock>
                                         <TextBlock Style="{StaticResource TextBlockLarge}" HorizontalAlignment="Left" FontSize="12" Margin="5,5,0,0">
                                             <Run Text="单次流程耗时:" />
-                                            <Run Text="{Binding ViewState.SingleFlowTime}" />
+                                            <Run Text="{Binding SingleFlowTime}" />
                                         </TextBlock>
                                     </StackPanel>
                                 </Border>

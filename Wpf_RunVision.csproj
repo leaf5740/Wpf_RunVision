@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64</Platforms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,12 +25,18 @@
   <ItemGroup>
     <Reference Include="Basler.Pylon">
       <HintPath>C:\Users\PC\Desktop\Basler.Pylon.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="CamCtrl">
       <HintPath>C:\Users\PC\Desktop\CamCtrl.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="GxIAPINET">
       <HintPath>C:\Users\PC\Desktop\GxIAPINET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ImageSourceModuleCs">
+      <HintPath>C:\Program Files\VisionMaster4.3.0\Development\V4.x\ComControls\Assembly\Module(sp)\x64\Collection\ImageSourceModule\ImageSourceModuleCs.dll</HintPath>
     </Reference>
     <Reference Include="VM.Controls">
       <HintPath>C:\Program Files\VisionMaster4.3.0\Development\V4.x\ComControls\Assembly\VM.Controls.dll</HintPath>
@@ -42,6 +49,10 @@
     </Reference>
     <Reference Include="VMControls.BaseInterface">
       <HintPath>C:\Program Files\VisionMaster4.3.0\Development\V4.x\ComControls\Assembly\VMControls.BaseInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="VMControls.Interface">
+      <HintPath>C:\Program Files\VisionMaster4.3.0\Applications\myLibs\VMControls.Interface.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="VMControls.WPF">
       <HintPath>C:\Program Files\VisionMaster4.3.0\Development\V4.x\ComControls\Assembly\VMControls.WPF.dll</HintPath>

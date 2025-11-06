@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +17,6 @@ using VM.Core;
 using VMControls.WPF.Release;
 using Wpf_RunVision.Models;
 using Wpf_RunVision.Services;
-using Wpf_RunVision.Services.Core;
 using Wpf_RunVision.Utils;
 using Wpf_RunVision.Views;
 
@@ -106,6 +106,23 @@ namespace Wpf_RunVision.ViewModels
         [ObservableProperty]
         private string _totalRunTime = "00:00:00";
 
+        [ObservableProperty]
+        public string _etchingCode = "未检测";
+        [ObservableProperty]
+        public string _paperCode = "未检测";
+        [ObservableProperty]
+        public bool _plcStatus = false;
+        [ObservableProperty]
+        public bool _dbStatus =false;
+        [ObservableProperty]
+        public bool _nasStatus = false;
+        [ObservableProperty]
+        public double _progressValue= 0;
+        [ObservableProperty]
+        public string _ctTime = "00:00.00";
+        [ObservableProperty]
+        public string _singleFlowTime = "00:00.00";
+       
         /// <summary>
         /// 是否为员工权限（简化UI绑定逻辑）
         /// </summary>
@@ -137,6 +154,7 @@ namespace Wpf_RunVision.ViewModels
         /// 核心类：视觉服务管理器（方案切换时初始化）
         /// </summary>
         private VisionServiceManager visionServiceManager;
+
         #endregion
 
         #region 构造函数（初始化逻辑集中管理）
@@ -378,21 +396,20 @@ namespace Wpf_RunVision.ViewModels
 
                 // 2. 后台线程：释放旧资源+加载配置
                 var (schemeFolder, solFile) = await PrepareSchemeSwitchAsync(schemeName);
-
                 // 显示加载遮罩（主线程）
                 IsAnimation = Visibility.Visible;
 
-                // 初始化核心服务（耗时操作，放后台线程）
-                await Task.Run(() =>
-                {
-                    visionServiceManager = new VisionServiceManager();
-                });
-
+                visionServiceManager = new VisionServiceManager();
+                 await visionServiceManager.InitializeAsync();
+                PlcStatus = visionServiceManager.PlcStatus;
+                DbStatus = visionServiceManager.DatabaseStatus;
+                NasStatus = visionServiceManager.NasStatus;
+                visionServiceManager.StartAsync();
 
                 // 3. 主线程：初始化UI控件+加载方案
                 await InitializeNewSchemeAsync(schemeName, solFile);
 
-               
+
 
                 MyLogger.Info($"方案切换成功：[{schemeName}]，路径：{schemeFolder}");
             }
@@ -441,7 +458,7 @@ namespace Wpf_RunVision.ViewModels
                     return;
                 }
 
-                if (visionServiceManager !=null)
+                if (visionServiceManager != null)
                 {
                     visionServiceManager.Stop();
                 }
@@ -456,8 +473,8 @@ namespace Wpf_RunVision.ViewModels
 
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
-
                 MyLogger.Info("程序正常关闭，所有资源已释放");
+                Process.GetCurrentProcess().Kill();
             }
             catch (Exception ex)
             {
@@ -549,7 +566,7 @@ namespace Wpf_RunVision.ViewModels
 
                 // 加载.sol方案
                 VmSolution.Load(solFile);
-               
+
                 // 更新UI状态
                 CurrentScheme = $"当前方案：{schemeName}";
             });
