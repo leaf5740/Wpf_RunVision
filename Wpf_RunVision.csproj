@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="HandyControl" Version="3.5.1" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+    <PackageReference Include="MySql.Data" Version="9.5.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="NLog" Version="6.0.5" />
+    <PackageReference Include="NModbus4.Core" Version="1.0.2" />
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+    <PackageReference Include="System.Management" Version="9.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Basler.Pylon">
+      <HintPath>C:\Users\PC\Desktop\Basler.Pylon.dll</HintPath>
+    </Reference>
+    <Reference Include="CamCtrl">
+      <HintPath>C:\Users\PC\Desktop\CamCtrl.dll</HintPath>
+    </Reference>
+    <Reference Include="GxIAPINET">
+      <HintPath>C:\Users\PC\Desktop\GxIAPINET.dll</HintPath>
+    </Reference>
+    <Reference Include="VM.Controls">
+      <HintPath>C:\Program Files\VisionMaster4.3.0\Development\V4.x\ComControls\Assembly\VM.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="VM.Core">
+      <HintPath>C:\Program Files\VisionMaster4.3.0\Development\V4.x\ComControls\Assembly\VM.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="VM.PlatformSDKCS">
+      <HintPath>C:\Program Files\VisionMaster4.3.0\Development\V4.x\ComControls\Assembly\VM.PlatformSDKCS.dll</HintPath>
+    </Reference>
+    <Reference Include="VMControls.BaseInterface">
+      <HintPath>C:\Program Files\VisionMaster4.3.0\Development\V4.x\ComControls\Assembly\VMControls.BaseInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="VMControls.WPF">
+      <HintPath>C:\Program Files\VisionMaster4.3.0\Development\V4.x\ComControls\Assembly\VMControls.WPF.dll</HintPath>
+    </Reference>
+    <Reference Include="VMControls.WPF.Release">
+      <HintPath>C:\Program Files\VisionMaster4.3.0\Development\V4.x\ComControls\Assembly\VMControls.WPF.Release.dll</HintPath>
+    </Reference>
+    <Reference Include="WPFBase">
+      <HintPath>C:\Program Files\VisionMaster4.3.0\Development\V4.x\ComControls\Assembly\WPFBase.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

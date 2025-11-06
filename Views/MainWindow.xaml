@@ -1,0 +1,282 @@
+<Window x:Class="Wpf_RunVision.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:Release="clr-namespace=VMControls.WPF.Release;assembly=VMControls.WPF"
+        xmlns:vm="clr-namespace:Wpf_RunVision.ViewModels"
+        mc:Ignorable="d"
+        Title="RunVision"
+        MinHeight="450"
+        MinWidth="800"
+        Height="800" Width="1300"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized">
+
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction 
+            Command="{Binding WindowClosingCommand}"
+                PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- 菜单栏 -->
+        <Menu Grid.Row="0">
+            <MenuItem Header="软件设置" IsEnabled="{Binding CanEditScheme}">
+                <MenuItem Style="{x:Null}" Header="方案配置" Command="{Binding OpenSchemeConfigCommand}" />
+            </MenuItem>
+
+            <MenuItem Header="{Binding CurrentPermission}" Command="{Binding TogglePermissionCommand}" />
+
+            <MenuItem Header="{Binding CurrentScheme}">
+                <MenuItem.ItemsSource>
+                    <Binding Path="Schemes" />
+                </MenuItem.ItemsSource>
+                <MenuItem.ItemContainerStyle>
+                    <Style TargetType="MenuItem">
+                        <Setter Property="Header" Value="{Binding}" />
+                        <Setter Property="Command"
+                                Value="{Binding DataContext.SwitchSchemeCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                        <Setter Property="CommandParameter" Value="{Binding}" />
+                    </Style>
+                </MenuItem.ItemContainerStyle>
+            </MenuItem>
+        </Menu>
+
+        <!-- 主内容区 -->
+        <Grid Grid.Row="1" Background="{DynamicResource {x:Static SystemColors.MenuBrushKey}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- 左侧主界面显示区域 -->
+            <Border Grid.Column="0">
+                <ContentControl Content="{Binding FrontendControl}" />
+            </Border>
+
+            <!-- 加载遮罩层 -->
+            <Grid  Grid.Column="0" 
+                   Visibility="{Binding IsAnimation}" 
+                   Panel.ZIndex="99">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                     <!--AnimationPath 动画控件显示加载动画
+                    <Grid Width="300" Height="300">
+                        <hc:AnimationPath Data="M512 0C229.12 0 0 229.12 0 512c0 226.56 146.56 417.92 350.08 485.76 25.6 4.48 35.2-10.88 35.2-24.32 0-12.16-0.64-52.48-0.64-95.36-128.64 23.68-161.92-31.36-172.16-60.16-5.76-14.72-30.72-60.16-52.48-72.32-17.92-9.6-43.52-33.28-0.64-33.92 40.32-0.64 69.12 37.12 78.72 52.48 46.08 77.44 119.68 55.68 149.12 42.24 4.48-33.28 17.92-55.68 32.64-68.48-113.92-12.8-232.96-56.96-232.96-252.8 0-55.68 19.84-101.76 52.48-137.6-5.12-12.8-23.04-65.28 5.12-135.68 0 0 42.88-13.44 140.8 52.48 40.96-11.52 84.48-17.28 128-17.28 43.52 0 87.04 5.76 128 17.28 97.92-66.56 140.8-52.48 140.8-52.48 28.16 70.4 10.24 122.88 5.12 135.68 32.64 35.84 52.48 81.28 52.48 137.6 0 196.48-119.68 240-233.6 252.8 18.56 16 34.56 46.72 34.56 94.72 0 68.48-0.64 123.52-0.64 140.8 0 13.44 9.6 29.44 35.2 24.32A512.832 512.832 0 0 0 1024 512c0-282.88-229.12-512-512-512z" 
+                          Duration="0:0:6" 
+                          Stretch="Uniform" StrokeThickness="6"
+                          Stroke="{DynamicResource PrimaryBrush}">
+                        </hc:AnimationPath>
+                    </Grid>-->
+                    <TextBlock Text="方案加载中，请稍候..." 
+                       Style="{StaticResource TextBlockLargeBold}"
+                       FontSize="20" 
+                       HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- 中间分割条 -->
+            <GridSplitter Grid.Column="1"
+                          Width="1"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Stretch"
+                          ResizeDirection="Columns"
+                          ResizeBehavior="PreviousAndNext"
+                          Background="Transparent"
+                          ShowsPreview="True" />
+
+            <!-- 右侧状态面板 -->
+            <hc:SimplePanel Grid.Column="2" Margin="2,0,2,0"
+                            Background="{DynamicResource RegionBrush}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- 上方状态与进度 -->
+                    <Border Grid.Row="0" Margin="0,2,0,2"
+                            BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
+                            Background="{DynamicResource RegionBrush}"
+                            CornerRadius="4">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2.5*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Row="0" Grid.ColumnSpan="2">
+                                <Border Style="{StaticResource BorderRegion}" Margin="5,5,5,0" Padding="5">
+                                    <TextBlock ToolTip="{Binding TotalRunTime}" Style="{StaticResource TextBlockLargeBold}" HorizontalAlignment="Center" FontSize="14">
+                                        <Run Text="程序总运行时长:" />
+                                        <Run Text="{Binding TotalRunTime}" />
+                                    </TextBlock>
+                                </Border>
+                            </Grid>
+
+                            <!-- 左侧：码信息 + 状态 -->
+                            <Grid Grid.Row="1" Grid.Column="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <!-- 蚀刻码 & 纸质码 -->
+                                <Border Grid.Row="0" Grid.ColumnSpan="2" Style="{StaticResource BorderRegion}" Margin="5" Padding="5">
+                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Left">
+                                        <TextBlock Style="{StaticResource TextBlockLargeBold}" HorizontalAlignment="Left" FontSize="12" Margin="5,5,0,0">
+                                            <Run Text="蚀刻码:" />
+                                            <Run Text="{Binding ViewState.EtchingCode}" />
+                                        </TextBlock>
+                                        <TextBlock Style="{StaticResource TextBlockLargeBold}" HorizontalAlignment="Left" FontSize="12" Margin="5,5,0,0">
+                                            <Run Text="纸质码:" />
+                                            <Run Text="{Binding ViewState.PaperCode}" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 左下：状态信息 -->
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0" Style="{StaticResource BorderRegion}" Margin="5,0,5,5" Padding="5">
+                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" />
+                                    </Border>
+
+                                    <Border Grid.Column="1" Style="{StaticResource BorderRegion}" Margin="0,0,5,5" Padding="5">
+                                        <StackPanel Orientation="Vertical" HorizontalAlignment="Left" />
+                                    </Border>
+
+                                    <Border Grid.Column="2" Style="{StaticResource BorderRegion}" Margin="0,0,5,5" Padding="5">
+                                        <StackPanel Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left">
+
+                                            <!-- PLC 状态 -->
+                                            <TextBlock HorizontalAlignment="Left" FontSize="12" Margin="5,5,0,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ViewState.PlcStatus}" Value="True">
+                                                                <Setter Property="Foreground" Value="Green" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding ViewState.PlcStatus}" Value="False">
+                                                                <Setter Property="Foreground" Value="Red" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                                <Run Text="PLC: " />
+                                            </TextBlock>
+
+                                            <!-- 数据库状态 -->
+                                            <TextBlock HorizontalAlignment="Left" FontSize="12" Margin="5,5,0,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ViewState.DbStatus}" Value="True">
+                                                                <Setter Property="Foreground" Value="Green" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding ViewState.DbStatus}" Value="False">
+                                                                <Setter Property="Foreground" Value="Red" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                                <Run Text="数据库: " />
+                                            </TextBlock>
+
+                                            <!-- 存图网盘状态 -->
+                                            <TextBlock HorizontalAlignment="Left" FontSize="12" Margin="5,5,0,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ViewState.NasStatus}" Value="True">
+                                                                <Setter Property="Foreground" Value="Green" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding ViewState.NasStatus}" Value="False">
+                                                                <Setter Property="Foreground" Value="Red" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                                <Run Text="存图网盘: " />
+                                            </TextBlock>
+
+                                        </StackPanel>
+                                    </Border>
+
+                                </Grid>
+                            </Grid>
+
+                            <!-- 右侧：进度与时间 -->
+                            <Grid Grid.Row="1" Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <!-- 进度条 -->
+                                <Border Grid.Row="0" Style="{StaticResource BorderRegion}" Margin="0,5,5,5" Padding="5">
+                                    <StackPanel Orientation="Vertical">
+                                        <hc:CircleProgressBar Value="{Binding ViewState.ProgressValue}"
+                                                              Margin="5" Width="100" Height="96" ArcThickness="20"
+                                                              Style="{StaticResource ProgressBarSuccessCircle}" />
+                                        <Slider Value="{Binding ViewState.ProgressValue}" Maximum="100" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- 时间信息 -->
+                                <Border Grid.Row="1" Style="{StaticResource BorderRegion}" Margin="0,0,5,5" Padding="5">
+                                    <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                        <TextBlock Style="{StaticResource TextBlockLarge}" HorizontalAlignment="Left" FontSize="12" Margin="5,5,0,0">
+                                            <Run Text="CT总耗时:" />
+                                            <Run Text="{Binding ViewState.CtTime}" />
+                                        </TextBlock>
+                                        <TextBlock Style="{StaticResource TextBlockLarge}" HorizontalAlignment="Left" FontSize="12" Margin="5,5,0,0">
+                                            <Run Text="单次流程耗时:" />
+                                            <Run Text="{Binding ViewState.SingleFlowTime}" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                        </Grid>
+
+                    </Border>
+
+                    <!-- 下方日志显示 -->
+                    <Border Grid.Row="1" Margin="0,3,0,2"
+                            BorderThickness="1" BorderBrush="{DynamicResource BorderBrush}"
+                            Background="{DynamicResource RegionBrush}"
+                            CornerRadius="4">
+                        <RichTextBox x:Name="LogRichTextBox"
+                                     BorderThickness="0"
+                                     IsReadOnly="True"
+                                     VerticalScrollBarVisibility="Auto" />
+                    </Border>
+                    
+                </Grid>
+            </hc:SimplePanel>
+        </Grid>
+    </Grid>
+</Window>

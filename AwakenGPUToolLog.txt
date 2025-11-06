@@ -1,0 +1,3 @@
+Awake Gpu start
+Cuda malloc error, err = 2
+Awake Gpu end.
